@@ -43,7 +43,7 @@ export default function DatabaseConnectionForm() {
             // Manejar la respuesta
             if (response.ok) {
                 const responseData = await response.text();
-                router.push('/db-conn');
+                router.push('/dashboard');
             } else {
                 console.log('Conexión fallida: ', await response.text());
             }
