@@ -20,13 +20,32 @@ import axios from 'axios';
 export default function Dashboard() {
     const [tables, setTables] = useState([]);
     const [selectedTable, setSelectedTable] = useState('');
-    const [tableData, setTableData] = useState({columns: [], rows: [], page: 0, totalCount: 0});
+    const [tableData, setTableData] = useState({
+        rows: [],
+        columns: [],
+        pageSize: 10,
+        totalRows: 0,
+        currentPage: 0
+    });
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const [loading, setLoading] = useState(false);
+
 
     useEffect(() => {
-        axios.get(`${apiUrl}/api/listTables`)
-            .then(response => setTables(response.data))
-            .catch(error => console.error('Error al obtener las tablas:', error));
+        const fetchTables = async () => {
+            setLoading(true);
+            try {
+                const response = await axios.get(`${apiUrl}/api/listTables`);
+                setTables(response.data || []);
+                console.log('Tables:', response.data);
+            } catch (error) {
+                console.error('Error al obtener las tablas:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (apiUrl) fetchTables();
     }, [apiUrl]);
 
     useEffect(() => {
@@ -35,30 +54,48 @@ export default function Dashboard() {
         }
     }, [selectedTable, apiUrl]);
 
-    const fetchTableData = (tableName, pageNum = 0) => {
-        Promise.all([
-            axios.get(`${apiUrl}/api/columns/${tableName}`),
-            axios.get(`${apiUrl}/api/data/${tableName}?page=${pageNum}&size=10`)
-        ])
-            .then(([columnsResponse, rowsResponse]) => {
+    const fetchTableData = async (tableName, pageNum = 0) => {
+        setLoading(true);
+        try {
+            const response = await axios.get(`${apiUrl}/api/data/${tableName}?page=${pageNum}&size=10`)
+            console.log('Table data:', response.data);
+            if (response.data ) {
                 setTableData({
-                    columns: columnsResponse.data,
-                    rows: rowsResponse.data.data,
-                    page: rowsResponse.data.currentPage,
-                    totalCount: rowsResponse.data.totalRows,
+                    columns: response.data.columns,
+                    currentPage: pageNum,
+                    pageSize: response.data.pageSize,
+                    rows: response.data.rows,
+                    totalRows: response.data.totalRows,
+                    tableName: tableName,
                 });
-                console.log('Datos de la tabla', tableName, 'obtenidos:', rowsResponse.data);
-            })
-            .catch(error => console.error(`Error al obtener datos para la tabla ${tableName}:`, error));
+            } else {
+                // Manejar el caso en que la estructura no es la esperada
+                console.error('Unexpected response structure:', response);
+            }
+        } catch (error) {
+            console.error(`Error fetching data for table ${tableName}:`, error) ;
+        } finally {
+            setLoading(false);
+        }
     };
-
     const handleSelectTable = (event) => {
         setSelectedTable(event.target.value);
+        setTableData({
+            rows: [],
+            columns: [],
+            pageSize: 10,
+            totalRows: 0,
+            currentPage: 0,
+        });
     };
 
     const handleChangePage = (event, newPage) => {
-        fetchTableData(selectedTable, newPage);
+        fetchTableData(selectedTable, newPage * tableData.pageSize);
     };
+    if (loading) {
+        return <div>Loading...</div>; // TODO: reemplazar esto con un componente de carga
+    }
+
 
     return <Container maxWidth="lg">
         <FormControl fullWidth margin="normal">
@@ -69,7 +106,7 @@ export default function Dashboard() {
                 value={selectedTable}
                 onChange={handleSelectTable}
             >
-                {tables.map(table => (
+                {tables.map((table) => (
                     <MenuItem key={table} value={table}>{table}</MenuItem>
                 ))}
             </Select>
@@ -81,35 +118,41 @@ export default function Dashboard() {
                     <Table stickyHeader>
                         <TableHead>
                             <TableRow>
-                                {tableData.columns.map((column, colIndex) => (
-                                    <TableCell key={`header-${column.columnName}-${colIndex}`}>
-                                {column.columnName}
-                            </TableCell>
+                                {tableData.columns.map((column) => (
+                                    <TableCell key={column.COLUMN_NAME}>
+                                        {column.COLUMN_NAME?.replace('_', ' ').toUpperCase() || "N/A"}
+                                    </TableCell>
                                 ))}
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {tableData.rows.map((row, rowIndex) => (
-                                <TableRow key={`row-${rowIndex}`}>
-                                    {tableData.columns.map((column, colIndex) => (
-                                        <TableCell key={`cell-${column.columnName}-${rowIndex}-${colIndex}`}>
-                                            {row[column.columnName]}
+                            {tableData.rows.map((row) => (
+                                <TableRow key={`row-${row.id}`}>
+                                    {tableData.columns.map((column) => (
+                                        <TableCell key={`cell-${column.COLUMN_NAME}-${row.id}`}>
+                                            {row[column.COLUMN_NAME]}
                                         </TableCell>
                                     ))}
                                 </TableRow>
                             ))}
+                            {tableData.rows.length === 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={tableData.columns.length} align="center">
+                                        No data
+                                    </TableCell>
+                                </TableRow>
+                            )}
                         </TableBody>
                     </Table>
                 </TableContainer>
                 <TablePagination
                     component="div"
-                    count={tableData.totalCount}
-                    rowsPerPage={10}
-                    page={tableData.page}
-                    onPageChange={handleChangePage}
+                    count={tableData.totalRows}
+                    rowsPerPage={tableData.pageSize}
+                    page={tableData.currentPage}
+                    onPageChange={(event, newPage) => handleChangePage(event, newPage)}
                 />
             </React.Fragment>
         )}
     </Container>
-
-}
+};
