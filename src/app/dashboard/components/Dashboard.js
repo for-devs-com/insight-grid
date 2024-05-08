@@ -22,16 +22,7 @@ import axios from 'axios';
 export default function Dashboard() {
     const [tables, setTables] = useState([]);
     const [selectedTables, setSelectedTables] = useState([]);
-    const [selectedTableData, setSelectedTableData] = useState({
-        //tableName: {
-        //    columns: [],
-        //    currentPage: 0,
-        //    pageSize: 0,
-        //    rows: [],
-        //    totalRows: 0,
-        //}
-
-    });
+    const [selectedTableData, setSelectedTableData] = useState({});
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [loading, setLoading] = useState(false);
 
@@ -53,36 +44,6 @@ export default function Dashboard() {
         if (apiUrl) fetchTables();
     }, [apiUrl]);
 
-    /*useEffect(() => {
-        if (selectedTables.length > 0) {
-            fetchAllTableData(); // Llama a la función una vez en lugar de hacerlo recursivamente
-        }
-    }, [selectedTables, apiUrl]);*/
-
-    /*const fetchTableData = async (tableName, pageNum = 0) => {
-        setLoading(true);
-        try {
-            const response = await axios.get(`${apiUrl}/api/data/${tableName}?page=${pageNum}&size=10`)
-            console.log('Table data:', response.data);
-            if (response.data) {
-                setTableData({
-                    columns: response.data.columns,
-                    currentPage: pageNum,
-                    pageSize: response.data.pageSize,
-                    rows: response.data.rows,
-                    totalRows: response.data.totalRows,
-                    tableName: tableName,
-                });
-            } else {
-                // Manejar el caso en que la estructura no es la esperada
-                console.error('Unexpected response structure:', response);
-            }
-        } catch (error) {
-            console.error(`Error fetching data for table ${tableName}:`, error);
-        } finally {
-            setLoading(false);
-        }
-    };*/
 
     // Carga de datos para las tablas seleccionadas
     useEffect(() => {
@@ -120,7 +81,8 @@ export default function Dashboard() {
         setSelectedTables(event.target.value);
     };
 
-    const handleChangePage = (tableName, newPage) => {
+    const handleChangePage = async (tableName, newPage) => {
+        setLoading(true);
         fetchAllTableData(newPage).then(() => {
             const updatedData = {
                 ...selectedTableData,
@@ -138,60 +100,73 @@ export default function Dashboard() {
 
 
     return (<Container maxWidth="lg">
-        <FormControl fullWidth margin="normal">
-            <InputLabel id="table-select-label">Tablas</InputLabel>
-            <Select
-                labelId="table-select-label"
-                id="table-select"
-                multiple
-                value={selectedTables}
-                onChange={handleSelectTable}
-                input={<OutlinedInput id="select-multiple-chip" label="Tablas"/>}
-                renderValue={(selected) => (<div>
-                    {selected.map((value) => (<Chip key={value} label={value}/>))}
-                </div>)}
-            >
-                {tables.map((table) => (<MenuItem key={table} value={table}>{table}</MenuItem>))}
-            </Select>
-        </FormControl>
+            <FormControl fullWidth margin="normal">
+                <InputLabel id="table-select-label">Tablas</InputLabel>
+                <Select
+                    labelId="table-select-label"
+                    id="table-select"
+                    multiple
+                    value={selectedTables}
+                    onChange={handleSelectTable}
+                    input={<OutlinedInput id="select-multiple-chip" label="Tablas"/>}
+                    renderValue={(selected) => (<div>
+                        {selected.map((value) => (<Chip key={value} label={value}/>))}
+                    </div>)}
+                >
+                    {tables.map((table) => (<MenuItem key={table} value={table}>{table}</MenuItem>))}
+                </Select>
+            </FormControl>
 
-        {selectedTables.map((tableName) => (<React.Fragment key={tableName}>
-            {selectedTableData[tableName] ? (<TableContainer component={Paper} sx={{marginTop: 4}}>
-                <Table stickyHeader>
-                    <TableHead>
-                        <TableRow>
-                            {selectedTableData[tableName].columns.map((column) => (<TableCell key={column.COLUMN_NAME}>
-                                {column.COLUMN_NAME?.replace('_', ' ').toUpperCase() || "N/A"}
-                            </TableCell>))}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {selectedTableData.rows.map((row) => (<TableRow key={`row-${row.id}`}>
-                            {selectedTablesData[tableName].columns.map((column) => (
-                                <TableCell key={`cell-${column.COLUMN_NAME}-${row.id}`}>
-                                    {row[column.COLUMN_NAME]}
-                                </TableCell>))}
-                        </TableRow>))}
-                        {selectedTableData[tableName].rows.length === 0 && (<TableRow>
-                            <TableCell colSpan={selectedTables[tableName].columns.length}
-                                       align="center">
-                                No data
-                            </TableCell>
-                        </TableRow>)}
-                    </TableBody>
-                </Table>
-            </TableContainer>,
+            {selectedTables.map((tableName) => (
+                <React.Fragment key={tableName}>
+                    {selectedTableData[tableName] ? (
+                        <TableContainer component={Paper} sx={{marginTop: 4}}>
+                            <Table stickyHeader>
+                                <TableHead>
+                                    <TableRow>
+                                        {selectedTableData[tableName].columns.map((column) => (
+                                            <TableCell key={column.COLUMN_NAME}>
+                                                {column.COLUMN_NAME?.replace('_', ' ').toUpperCase() || "N/A"}
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {selectedTableData[tableName].rows.map((row, rowIndex) => (
+                                        <TableRow key={`row-${row.id}`}>
+                                            {selectedTableData[tableName].columns.map((column) => (
+                                                <TableCell key={`cell-${column.COLUMN_NAME}-${rowIndex}`}>
+                                                    {row[column.COLUMN_NAME]}
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>
+                                    ))}
+                                    {selectedTableData[tableName].rows.length === 0 && (
+                                        <TableRow>
+                                            <TableCell colSpan={selectedTableData[tableName].columns.length}
+                                                       align="center">
+                                                No data
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                            < TablePagination
+                                component="div"
+                                count={selectedTables[tableName]?.totalRows || 0}
+                                rowsPerPage={selectedTables[tableName]?.pageSize|| 10}
+                                page={selectedTables[tableName]?.currentPage || 0}
+                                onPageChange={(event, newPage) => handleChangePage(event, newPage)}
+                            />
+                        </TableContainer>
 
-                < TablePagination
-                    component="div"
-                    count={selectedTables[tableName].totalRows}
-                    rowsPerPage={selectedTables[tableName].pageSize}
-                    page={selectedTables[tableName].currentPage}
-                    onPageChange={(event, newPage) => handleChangePage(event, newPage)}
-                />) : (
-                <div>No data</div>
-            )}
-        </React.Fragment>))}
-    </Container>);
+                    ) : (
+                        <div>No data</div>
+                    )}
+                </React.Fragment>
+            ))}
 
+
+        </Container>
+    )
 };
