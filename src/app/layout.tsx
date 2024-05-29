@@ -4,7 +4,7 @@ import {ThemeProvider} from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from "@/theme";
 import Chat from "@/app/chat/page";
-import {Container} from "@mui/material";
+import {Box, Container} from "@mui/material";
 import {Providers} from "@/app/Providers";
 import Navbar from "@/app/components/Navbar";
 
@@ -25,25 +25,14 @@ export default function RootLayout({
             <ThemeProvider theme={theme}>
                 <CssBaseline/>
                 <Providers>
-                    <Container>
-                        <div style={{display: 'flex', height: '100vh'}}>
-                            <div style={{flex: 1}}>
-                                <Navbar/>
+                    <Container maxWidth="xl" disableGutters>
+                        <Box sx={{display: 'flex', flexDirection: 'column', height: '100vh'}}>
+                            <Navbar/>
+                            <Box sx={{flexGrow: 1, overflow: 'auto', paddingTop: '8px'}}>
                                 {children}
-                                <div style={{
-                                    width: '300px',
-                                    position: 'fixed',
-                                    right: 0,
-                                    top: 0,
-                                    height: '100vh',
-                                    overflowY: 'auto',
-                                    borderLeft: '1px solid #ccc'
-                                }}>
-                                    <Chat/>
-                                </div>
-                            </div>
-
-                        </div>
+                            </Box>
+                            <Chat/>
+                        </Box>
                     </Container>
                 </Providers>
             </ThemeProvider>

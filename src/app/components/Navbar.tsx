@@ -1,48 +1,44 @@
 "use client";
 
-import Link from "next/link";
-import {signIn, useSession, signOut} from "next-auth/react";
+import React from 'react';
+import {AppBar, Toolbar, Typography, Button, Avatar, Link} from '@mui/material';
+import {useSession, signIn, signOut} from 'next-auth/react';
 
-function Navbar() {
+const Navbar: React.FC = () => {
     const {data: session} = useSession();
 
     return (
-        <nav className="bg-slate-900 flex items-center py-3 justify-between px-24 text-white">
-            <Link href="/">
-                <h1>for-devs.com</h1>
-            </Link>
-
-            {session?.user ? (
-                <div className="flex gap-x-2 items-center">
-                    <Link href="/src/app/dashboard">Dashboard</Link>
-                    <p>
-                        {session.user.name} {session.user.email}
-                    </p>
-                    <img
-                        src={session.user.image}
-                        alt=""
-                        className="w-10 h-10 rounded-full cursor-pointer"
-                    />
-                    <button
-                        onClick={async () => {
-                            await signOut({
-                                callbackUrl: "/",
-                            })
-                        }}
-                    >
-                        Logout
-                    </button>
-                </div>
-            ) : (
-                <button
-                    onClick={() => signIn()}
-                    className="bg-sky-400 px-3 py-2 rounded"
-                >
-                    Sign In
-                </button>
-            )}
-        </nav>
+        <div>
+            <AppBar position="static" sx={{width: '100%'}}>
+                <Toolbar>
+                    <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
+                        <Link href="/" color="inherit" underline="none">
+                            for-devs.com
+                        </Link>
+                    </Typography>
+                    <Link href="/dashboard" color="inherit" underline="none" sx={{marginRight: 2}}>
+                        Dashboard
+                    </Link>
+                    {session?.user ? (
+                        <div style={{display: 'flex', alignItems: 'center'}}>
+                            <Avatar alt={session.user.name || session.user.email || 'User'}
+                                    src={session.user.image || undefined} sx={{marginRight: 2}}/>
+                            <Typography variant="body1" sx={{marginRight: 2}}>
+                                {session.user.name || session.user.email}
+                            </Typography>
+                            <Button color="inherit" onClick={() => signOut()}>
+                                Logout
+                            </Button>
+                        </div>
+                    ) : (
+                        <Button color="inherit" onClick={() => signIn()}>
+                            Sign In
+                        </Button>
+                    )}
+                </Toolbar>
+            </AppBar>
+        </div>
     );
-}
+};
 
 export default Navbar;
