@@ -1,26 +1,29 @@
 'use client';
 
 import { useChat } from 'ai/react';
+import {Box, Button, InputBase, Paper} from "@mui/material";
 
 export default function Chat() {
     const { messages, input, handleInputChange, handleSubmit } = useChat();
     return (
-        <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch">
-            {messages.map(m => (
-                    <div key={m.id} className="whitespace-pre-wrap">
-                {m.role === 'user' ? 'User: ' : 'AI: '}
-    {m.content}
-    </div>
-))}
-
-    <form onSubmit={handleSubmit}>
-    <input
-        className="fixed bottom-0 w-full max-w-md p-2 mb-8 border border-gray-300 rounded shadow-xl"
-    value={input}
-    placeholder="Say something..."
-    onChange={handleInputChange}
-    />
-    </form>
-    </div>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 12px)', overflow: 'auto', padding: 2 }}>
+            <Box sx={{ flexGrow: 1, overflowY: 'auto', border: '1px solid'}}>
+                {messages.map((m, i) => (
+                    <Paper key={i} sx={{ marginBottom: 1, padding: 1 }}>
+                        <b>{m.role === 'user' ? 'User: ' : 'Gridy: '}</b>
+                        {m.content}
+                    </Paper>
+                ))}
+            </Box>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', marginTop: 'auto' }}>
+                <InputBase
+                    sx={{ flexGrow: 1, border: '1px solid #ccc', borderRadius: 1, padding: 1, marginRight: 1 }}
+                    placeholder="Say something..."
+                    value={input}
+                    onChange={handleInputChange}
+                />
+                <Button type="submit" variant="contained" color="primary">Send</Button>
+            </form>
+        </Box>
 );
 }
