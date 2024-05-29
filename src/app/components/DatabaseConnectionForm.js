@@ -5,7 +5,7 @@ import {useRouter} from 'next/navigation';
 import {Container, Box, Typography, TextField, Button} from "@mui/material";
 import axios from "axios";
 
-export default function DatabaseConnectionForm() {
+export default function DatabaseConnectionForm({onConnectionSuccess}) {
     const router = useRouter();
     useEffect(() => {
 
@@ -15,6 +15,7 @@ export default function DatabaseConnectionForm() {
 
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
+    const [error, setError] = useState(null);
     const [databaseManager, setDatabaseManager] = useState('postgresql');
     const [host, setHost] = useState('localhost');
     const [port, setPort] = useState(5432);
@@ -42,15 +43,18 @@ export default function DatabaseConnectionForm() {
             });
             // Manejar la respuesta
             if (response.ok) {
-                const responseData = await response.text();
-                router.push('/dashboard');
+                onConnectionSuccess();
+
             } else {
-                console.log('Conexión fallida: ', await response.text());
+                // Mostrar mensaje de error
+                const errorMsg = await response.text();
+                setError(`Conexión fallida: ${errorMsg}`);
             }
 
         } catch (error) {
             // Manejar el error
             console.error('Error al conectar con la base de datos', error);
+            setError('Error al conectar con la base de datos');
         }
 
     };
@@ -127,6 +131,11 @@ export default function DatabaseConnectionForm() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
+                {error && (
+                    <Typography color="error" variant="body2">
+                        {error}
+                    </Typography>
+                )}
                 <Button
                     type="submit"
                     fullWidth
