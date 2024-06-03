@@ -4,7 +4,7 @@ import {ThemeProvider} from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from "@/theme";
 import Chat from "@/app/chat/page";
-import {Box, Container} from "@mui/material";
+import {Box} from "@mui/material";
 import {Providers} from "@/app/Providers";
 import Navbar from "@/app/components/Navbar";
 
