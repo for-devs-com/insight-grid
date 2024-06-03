@@ -25,15 +25,13 @@ export default function RootLayout({
             <ThemeProvider theme={theme}>
                 <CssBaseline/>
                 <Providers>
-                    <Container maxWidth="xl" disableGutters>
-                        <Box sx={{display: 'flex', flexDirection: 'column', height: '100vh'}}>
-                            <Navbar/>
-                            <Box sx={{flexGrow: 1, overflow: 'auto', paddingTop: '8px'}}>
-                                {children}
-                            </Box>
-                            <Chat/>
+                    <Box sx={{display: 'flex', flexDirection: 'column', width: '100vw', height: '100vh',}}>
+                        <Navbar/>
+                        <Box sx={{flexGrow: 1, overflow: 'auto', padding: 0, margin: 0}}>
+                            {children}
                         </Box>
-                    </Container>
+                        <Chat/>
+                    </Box>
                 </Providers>
             </ThemeProvider>
         </AppRouterCacheProvider>
