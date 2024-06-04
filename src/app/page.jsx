@@ -1,6 +1,7 @@
 'use client';
+
 import { useState } from 'react';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { useSession, signIn } from 'next-auth/react';
 import { Container } from '@mui/material';
 import DynamicTables from 'src/app/dashboard/components/DynamicTables';
 import DatabaseConnectionForm from 'src/app/components/DatabaseConnectionForm';
