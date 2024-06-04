@@ -2,6 +2,7 @@
   "name": "insight-grid",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@7.21.1",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
