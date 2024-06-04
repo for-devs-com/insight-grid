@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 
-export default function Dashboard() {
+export default function DynamicTables() {
     const [tables, setTables] = useState([]);
     const [selectedTables, setSelectedTables] = useState([]);
     const [selectedTableData, setSelectedTableData] = useState({});
