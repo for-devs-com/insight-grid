@@ -5,7 +5,7 @@ import {AppRouterCacheProvider} from "@mui/material-nextjs/v14-appRouter";
 import DynamicTables from "@/app/dashboard/components/DynamicTables";
 import DatabaseConnectionForm from "@/app/components/DatabaseConnectionForm";
 
-export default function DashboardPage(children) {
+export default function DashboardPage() {
 
     return <AppRouterCacheProvider>
                 <Container>

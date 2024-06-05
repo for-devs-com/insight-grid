@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { Container } from '@mui/material';
 import DynamicTables from 'src/app/dashboard/components/DynamicTables';
@@ -28,17 +28,11 @@ export default function Page() {
         );
     }
 
-    return (
-        <Container>
-            <h1>Grid Page</h1>
-            {!isConnected ? (
-                <DatabaseConnectionForm onConnectionSuccess={handleConnectionSuccess} />
-            ) : (
-                <>
-                    <p>Success Connection to the Intelligent data insight tool for your business</p>
-                    <DynamicTables />
-                </>
-            )}
-        </Container>
-    );
+    return <Container>
+        <h1>Grid Page</h1>
+        {!isConnected ? <DatabaseConnectionForm onConnectionSuccess={handleConnectionSuccess} /> : <>
+                <p>Success Connection to the Intelligent data insight tool for your business</p>
+                <DynamicTables />
+            </>}
+    </Container>;
 }

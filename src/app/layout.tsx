@@ -19,7 +19,7 @@ export default function RootLayout({
                                    }: {
     children: React.ReactNode;
 }) {
-    return (<html lang="en">
+    return <html lang="en">
         <body className={inter.className}>
         <AppRouterCacheProvider options={{enableCssLayer: true}}>
             <ThemeProvider theme={theme}>
@@ -36,8 +36,7 @@ export default function RootLayout({
             </ThemeProvider>
         </AppRouterCacheProvider>
         </body>
-        </html>
-    );
+        </html>;
 
 };
 

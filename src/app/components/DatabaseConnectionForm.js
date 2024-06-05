@@ -3,15 +3,15 @@ import {useState} from 'react';
 import {useEffect} from 'react';
 import {useRouter} from 'next/navigation';
 import {Container, Box, Typography, TextField, Button} from "@mui/material";
-import axios from "axios";
 
 export default function DatabaseConnectionForm({onConnectionSuccess}) {
     const router = useRouter();
     useEffect(() => {
 
-        if (!router.isReady) return;
-        console.log('Database Connection Form mounted');
-    }, [router.isReady]);
+            if (!router.isReady) return;
+            console.log('Database Connection Form mounted');
+        },
+        [router.isReady]);
 
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
