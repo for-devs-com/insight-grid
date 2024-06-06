@@ -1,5 +1,4 @@
-"use client";
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
     Container,
     InputLabel,
@@ -41,65 +40,61 @@ export default function DynamicTables() {
             }
         };
 
-        if (apiUrl) fetchTables();
+        if (apiUrl) fetchTables().then(r => r);
     }, [apiUrl]);
 
 
     // Carga de datos para las tablas seleccionadas
-    useEffect(() => {
-        const fetchAllTableData = async () => {
+
+    const fetchAllTableData = useCallback(async (newPage = 0) => {
             if (!selectedTables.length) return; // Exit if no tables are selected
 
             setLoading(true);
-            const newTableData = {};
+            const newTableData = {...selectedTables};
 
-            for (const tableName of selectedTables) {
+            for (const table of selectedTables) {
                 try {
-                    const response = await axios.get(`${apiUrl}/api/data/${tableName}?page=0&size=10`);
+                    const response = await axios.get(`${apiUrl}/api/data/${table}?page=${newPage}&size=10`);
                     if (response.data) {
-                        newTableData[tableName] = {
+                        newTableData[table] = {
                             columns: response.data.columns,
                             rows: response.data.rows,
                             pageSize: response.data.pageSize,
                             totalRows: response.data.totalRows,
-                            currentPage: 0,
+                            currentPage: newPage,
                         };
                     }
                 } catch (error) {
-                    console.error(`Error fetching data for table ${tableName}:`, error);
+                    console.error(`Error fetching data for table ${table}:`, error);
                 }
             }
 
             setSelectedTableData(newTableData);
             setLoading(false);
-        };
+        },
+        [selectedTables, apiUrl]);
 
-        fetchAllTableData();
-    }, [selectedTables, apiUrl]);
+    useEffect(() => {
+            fetchAllTableData(0, selectedTables[0]).then(r => r);
+        });
+
 
     const handleSelectTable = (event) => {
         setSelectedTables(event.target.value);
     };
 
-    const handleChangePage = async (tableName, newPage) => {
+    const handleChangePage = async (_event, tableName, newPage) => {
         setLoading(true);
-        fetchAllTableData(newPage).then(() => {
-            const updatedData = {
-                ...selectedTableData,
-                [tableName]: {
-                    ...selectedTableData[tableName],
-                    currentPage: newPage,
-                },
-            };
-            setSelectedTableData(updatedData);
-        });
+        await fetchAllTableData(newPage, tableName);
+        setLoading(false);
     };
     if (loading) {
         return <div>Loading...</div>; // TODO: reemplazar esto con un componente de carga
     }
 
 
-    return (<Container maxWidth="lg">
+    return (
+        <Container maxWidth="lg">
             <FormControl fullWidth margin="normal">
                 <InputLabel id="table-select-label">Tablas</InputLabel>
                 <Select
@@ -154,9 +149,9 @@ export default function DynamicTables() {
                             < TablePagination
                                 component="div"
                                 count={selectedTables[tableName]?.totalRows || 0}
-                                rowsPerPage={selectedTables[tableName]?.pageSize|| 10}
+                                rowsPerPage={selectedTables[tableName]?.pageSize || 10}
                                 page={selectedTables[tableName]?.currentPage || 0}
-                                onPageChange={(event, newPage) => handleChangePage(event, newPage)}
+                                onPageChange={(event, newPage) => handleChangePage(event, newPage, tableName)}
                             />
                         </TableContainer>
 
@@ -169,4 +164,4 @@ export default function DynamicTables() {
 
         </Container>
     )
-};
+}
