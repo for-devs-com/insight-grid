@@ -16,7 +16,7 @@ const Navbar: React.FC = () => {
                             for-devs.com
                         </Link>
                     </Typography>
-                    <Link href="../dashboard" color="inherit" underline="none" sx={{marginRight: 2}}>
+                    <Link href={"../dashboard"} color="inherit" underline="none" sx={{marginRight: 2}}>
                         Dashboard
                     </Link>
                     {session?.user ? (
