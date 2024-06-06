@@ -40,7 +40,7 @@ export default function DynamicTables() {
             }
         };
 
-        if (apiUrl) fetchTables().then(r => r);
+        if (apiUrl) fetchTables();
     }, [apiUrl]);
 
 
@@ -75,8 +75,8 @@ export default function DynamicTables() {
         [selectedTables, apiUrl]);
 
     useEffect(() => {
-            fetchAllTableData(0, selectedTables[0]).then(r => r);
-        });
+        fetchAllTableData();
+    }, [fetchAllTableData]);
 
 
     const handleSelectTable = (event) => {
