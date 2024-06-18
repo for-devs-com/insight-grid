@@ -9,7 +9,7 @@ const Navbar: React.FC = () => {
 
     return (
         <div>
-            <AppBar position="static" sx={{width: '100%'}}>
+            <AppBar position="static" sx={{width: '100%', backgroundColor: '#061a23'}}>
                 <Toolbar>
                     <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
                         <Link href="/" color="inherit" underline="none">

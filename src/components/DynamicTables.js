@@ -104,11 +104,28 @@ export default function DynamicTables() {
                     value={selectedTables}
                     onChange={handleSelectTable}
                     input={<OutlinedInput id="select-multiple-chip" label="Tablas"/>}
-                    renderValue={(selected) => (<div>
-                        {selected.map((value) => (<Chip key={value} label={value}/>))}
-                    </div>)}
+                    renderValue={(selected) => (
+                        <div>
+                            {selected.map((value) => (<Chip key={value} label={value}/>))}
+                        </div>
+                    )}
+                    sx={{
+                        backgroundColor: 'white', // Fondo blanco para el Select
+                        '& .MuiSelect-menu': {
+                            backgroundColor: 'white', // Fondo blanco para los elementos desplegados
+                        },
+                    }}
+                    MenuProps={{
+                        PaperProps: {
+                            style: {
+                                backgroundColor: 'black', // Fondo blanco para el menú desplegable
+                            },
+                        },
+                    }}
                 >
-                    {tables.map((table) => (<MenuItem key={table} value={table}>{table}</MenuItem>))}
+                    {tables.map((table) => (
+                        <MenuItem key={table} value={table}>{table}</MenuItem>
+                    ))}
                 </Select>
             </FormControl>
 
