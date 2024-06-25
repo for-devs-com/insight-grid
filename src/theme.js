@@ -43,7 +43,7 @@ const theme = createTheme({
         MuiContainer: {
             styleOverrides: {
                 root: {
-                    backgroundColor: '#061a23', // Color de fondo para otros contenedores
+                    backgroundColor: '#', // Color de fondo para otros contenedores
                 },
             },
         },
