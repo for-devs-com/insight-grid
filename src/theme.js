@@ -1,5 +1,4 @@
-'use client';
-
+'use client'
 import { Roboto } from 'next/font/google';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
@@ -17,33 +16,33 @@ const theme = createTheme({
             main: '#061a23', // Color principal
         },
         background: {
-            default: '#061a23', // Color de fondo predeterminado
-            paper: '#061a23',   // Color de fondo del papel (componentes)
-            appBar: '#061a23',  // Color de fondo del AppBar
-            container: '#061a23', // Color de fondo para otros contenedores
+            default: '#fff', // Color de fondo predeterminado
+            paper: '#fff',   // Color de fondo del papel (componentes)
+            appBar: '#fff',  // Color de fondo del AppBar
+            container: '#fff', // Color de fondo para otros contenedores
         },
         text: {
-            primary: '#ffffff', // Color de texto primario
+            primary: '#061a23', // Color de texto primario
         },
     },
     typography: {
         fontFamily: roboto.style.fontFamily,
         h5: {
-            color: '#ffffff', // Color de texto para variant="h5"
+            color: '#061a23', // Color de texto para variant="h5"
         },
     },
     components: {
         MuiAppBar: {
             styleOverrides: {
                 root: {
-                    backgroundColor: '#ffff', // Color de fondo del AppBar
+                    backgroundColor: '#fff', // Color de fondo del AppBar
                 },
             },
         },
         MuiContainer: {
             styleOverrides: {
                 root: {
-                    backgroundColor: '#', // Color de fondo para otros contenedores
+                    backgroundColor: '#fff', // Color de fondo para otros contenedores
                 },
             },
         },
@@ -51,11 +50,11 @@ const theme = createTheme({
             styleOverrides: {
                 root: {
                     color: '#ffffff', // Color del texto del botón
-                    backgroundColor: 'transparent', // Fondo transparente por defecto
+                    backgroundColor: '#03A63C', // Fondo del botón por defecto
                     '&:hover': {
-                        backgroundColor: '#ffd803', // Fondo al pasar el mouse
+                        backgroundColor: '#3B8C6E', // Fondo al pasar el mouse
                         '@media (hover: none)': {
-                            backgroundColor: 'transparent', // Volver a transparente en dispositivos sin hover
+                            backgroundColor: '#03A63C', // Volver al color de fondo original en dispositivos sin hover
                         },
                     },
                 },
@@ -74,19 +73,19 @@ const theme = createTheme({
             styleOverrides: {
                 root: {
                     '& .MuiInputBase-input': {
-                        color: '#ffffff', // Color del texto en el campo de texto
+                        color: '#061a23', // Color del texto en el campo de texto
                     },
                     '& .MuiInputLabel-root': {
-                        color: '#ffffff', // Color del texto de la etiqueta
+                        color: '#061a23', // Color del texto de la etiqueta
                     },
                     '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#ffffff', // Color del borde del campo de texto
+                        borderColor: '#061a23', // Color del borde del campo de texto
                     },
                     '&:hover .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#ffffff', // Color del borde del campo de texto al pasar el mouse
+                        borderColor: '#061a23', // Color del borde del campo de texto al pasar el mouse
                     },
                     '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#ffffff', // Color del borde del campo de texto cuando está enfocado
+                        borderColor: '#061a23', // Color del borde del campo de texto cuando está enfocado
                     },
                 },
             },
