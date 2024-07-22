@@ -19,7 +19,7 @@ export default function DatabaseConnectionForm({onConnectionSuccess}) {
     const [host, setHost] = useState('localhost');
     const [port, setPort] = useState(5432);
     const [databaseName, setDatabaseName] = useState('for-devs-university');
-    const [user, setUser] = useState('postgres');
+    const [userName, setUserName] = useState('postgres');
     const [password, setPassword] = useState('qwerty');
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -28,7 +28,7 @@ export default function DatabaseConnectionForm({onConnectionSuccess}) {
             host,
             port,
             databaseName,
-            user,
+            userName,
             password
         };
         try {
@@ -116,8 +116,8 @@ export default function DatabaseConnectionForm({onConnectionSuccess}) {
                     id="user"
                     label="User"
                     name="user"
-                    value={user}
-                    onChange={(e) => setUser(e.target.value)}
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
                 />
                 <TextField
                     margin="normal"
