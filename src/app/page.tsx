@@ -1,51 +1,21 @@
-"use client";
+"use client"
 
-import React, { useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { Container, Box } from '@mui/material';
-import DynamicTables from '@/components/DynamicTables';
-import DatabaseConnectionForm from '@/components/DatabaseConnectionForm';
-import GradientBackgroundWrapper from '@/components/gradientBackground';
-import LandingPage from '@/components/LandingPage';
+import { Container, Box } from "@mui/material";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
+import DynamicTables from "@/components/DynamicTables";
+import React from "react";
+import Hero from "@/components/Hero";
 import Footer from "@/components/Footer";
 
-export default function Page() {
-    const { data: session, status } = useSession();
-    const [isConnected, setIsConnected] = useState(false);
-
-    const handleConnectionSuccess = () => {
-        setIsConnected(true);
-    };
-
-    if (status === 'loading') {
-        return <p>Loading...</p>;
-    }
-
+export default function DashboardPage() {
     return (
-        <GradientBackgroundWrapper>
-            {!session ? (
-                <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-                    <Box sx={{ flex: '1' }}>
-                        <LandingPage />
-                    </Box>
+        <AppRouterCacheProvider>
+            <Box sx={{ width: '100vw', overflowX: 'hidden' }}>
+                <Hero />
+                <Container>
                     <Footer />
-                </Box>
-            ) : (
-                <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-                    <Container sx={{ flex: '1' }}>
-                        <h1>Grid Page</h1>
-                        {!isConnected ? (
-                            <DatabaseConnectionForm onConnectionSuccess={handleConnectionSuccess} />
-                        ) : (
-                            <>
-                                <p>Success Connection to the Intelligent data insight tool for your business</p>
-                                <DynamicTables />
-                            </>
-                        )}
-                    </Container>
-                    <Footer />
-                </Box>
-            )}
-        </GradientBackgroundWrapper>
+                </Container>
+            </Box>
+        </AppRouterCacheProvider>
     );
 }
