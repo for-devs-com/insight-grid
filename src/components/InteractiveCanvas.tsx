@@ -11,14 +11,8 @@ import ReactFlow, {
 } from 'reactflow';
 
 import DatabaseConnectionNode from './DatabaseConnectionNode';
-import {initialNodes, initialEdges} from './InteractiveCanvas.constants';
 import 'reactflow/dist/style.css';
-
 import NodeMenu from './NodeMenu';
-
-const getLayoutedElements = (nodes, edges) => {
-    return {nodes, edges};
-};
 
 const nodeTypes = {
     databaseConnection: DatabaseConnectionNode,
@@ -28,25 +22,39 @@ const nodeTypes = {
 const LayoutFlow = ({newElements}) => {
     const {fitView} = useReactFlow();
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const [nodeMenuOpen, setNodeMenuOpen] = useState(false);
 
     // Load nodes and edges from localStorage
-    useEffect(() => {
-        const storedNodes = localStorage.getItem('nodes');
-        const storedEdges = localStorage.getItem('edges');
-        if (storedNodes) setNodes(JSON.parse(storedNodes));
-        if (storedEdges) setEdges(JSON.parse(storedEdges));
+    const loadFromLocalStorage = useCallback(() => {
+        const storedNodes = JSON.parse(localStorage.getItem('nodes')) || [];
+        const storedEdges = JSON.parse(localStorage.getItem('edges')) || [];
+        setNodes(storedNodes);
+        setEdges(storedEdges);
     }, [setNodes, setEdges]);
 
-    // Add a new node to the canvas if it has a valid position
+    // Load nodes and edges from localStorage when the component mounts
+    const saveToLocalStorage = useCallback((nodes, edges) => {
+        localStorage.setItem('nodes', JSON.stringify(nodes));
+        localStorage.setItem('edges', JSON.stringify(edges));
+    }, []);
+
+    useEffect(() => {
+        loadFromLocalStorage();
+    }, [loadFromLocalStorage]);
+
+    // Add nodes with validated positions
     const addValidNode = useCallback((newNode) => {
         if (newNode.position && typeof newNode.position.x === 'number' && typeof newNode.position.y === 'number') {
-            setNodes((nds) => [...nds, newNode]);
+            setNodes((nds) => {
+                const updatedNodes = [...nds, newNode];
+                saveToLocalStorage(updatedNodes, edges);
+                return updatedNodes;
+            });
         } else {
             console.error('Node position is invalid:', newNode);
         }
-    }, [setNodes]);
+    }, [setNodes, saveToLocalStorage, edges]);
 
     // Add a new node to the canvas with a random valid position
     const addNode = (type) => {
@@ -72,35 +80,28 @@ const LayoutFlow = ({newElements}) => {
     }, [newElements, addValidNode]);
 
     // Handle nodes deletion
-    const handleNodesDelete = useCallback((deletedNodes: any[]) => {
+    const handleNodesDelete = useCallback((deletedNodes) => {
         setNodes((nds) => {
             const updatedNodes = nds.filter((n) => !deletedNodes.find((d) => d.id === n.id));
-            localStorage.setItem('nodes', JSON.stringify(updatedNodes));
+            saveToLocalStorage(updatedNodes, edges);
             return updatedNodes;
         });
-    }, [setNodes]);
+    }, [setNodes, saveToLocalStorage, edges]);
 
     // Save nodes and edges to localStorage whenever they change
     useEffect(() => {
-        localStorage.setItem('nodes', JSON.stringify(nodes));
-    }, [nodes]);
-
-    useEffect(() => {
-        localStorage.setItem('edges', JSON.stringify(edges));
-    }, [edges]);
-
+        saveToLocalStorage(nodes, edges);
+    }, [nodes, edges, saveToLocalStorage]);
     const memoizedNodeTypes = useMemo(() => nodeTypes, []);
 
     const onLayout = useCallback(() => {
-        const layouted = getLayoutedElements(nodes, edges);
-
-        setNodes([...layouted.nodes]);
-        setEdges([...layouted.edges]);
-
-        window.requestAnimationFrame(() => {
-            fitView();
-        });
-    }, [nodes, edges, fitView]);
+        const layoutedNodes = nodes.map(node => ({
+            ...node,
+            position: { x: Math.random() * 250, y: Math.random() * 250 },
+        }));
+        setNodes(layoutedNodes);
+        fitView();
+    }, [nodes, fitView, setNodes]);
 
 
     return (
@@ -126,8 +127,15 @@ const LayoutFlow = ({newElements}) => {
                         onNodesChange(changes);
                         handleNodesDelete(changes.filter(change => change.type === 'remove'));
                     }}
-                    onEdgesChange={onEdgesChange}
-                    onConnect={(params) => setEdges((eds) => addEdge(params, eds))}
+                    onEdgesChange={(changes) => {
+                        onEdgesChange(changes);
+                        saveToLocalStorage(nodes, edges);
+                    }}
+                    onConnect={(params) => setEdges((eds) => {
+                        const updatedEdges = addEdge(params, eds);
+                        saveToLocalStorage(nodes, updatedEdges);
+                        return updatedEdges;
+                    })}
                     fitView
                     nodeTypes={memoizedNodeTypes}
                     className="bg-gray-800"
