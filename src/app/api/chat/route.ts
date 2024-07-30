@@ -1,8 +1,6 @@
 import { streamText } from 'ai';
 import { openai } from '@ai-sdk/openai';
 
-
-// Set the runtime to edge for best performance
 export const runtime = 'edge';
 
 export async function POST(req: Request) {
