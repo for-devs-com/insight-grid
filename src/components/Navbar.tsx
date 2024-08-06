@@ -1,21 +1,30 @@
 "use client";
 
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Typography, Button, Avatar, Link, IconButton, Drawer, List, ListItem, ListItemText, useMediaQuery, useTheme } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Avatar, Link, IconButton, Drawer, List, ListItem, ListItemText, useMediaQuery, useTheme, Menu, MenuItem } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useSession, signIn, signOut } from 'next-auth/react';
 
 const Navbar: React.FC = () => {
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const { data: session } = useSession();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-    const scrollToAbout = () => {
-        const aboutElement = document.getElementById('about');
-        if (aboutElement) {
-            aboutElement.scrollIntoView({ behavior: 'smooth' });
+    const scrollToSection = (sectionId: string) => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
         }
+    };
+
+    const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
     };
 
     const toggleDrawer = (open: boolean) => () => {
@@ -25,11 +34,26 @@ const Navbar: React.FC = () => {
     const drawer = (
         <div>
             <List>
-                <ListItem button onClick={scrollToAbout}>
-                    <ListItemText primary="About" />
+                <ListItem button onClick={() => scrollToSection('intro')}>
+                    <ListItemText primary="Intro" />
                 </ListItem>
-                <ListItem button component={Link} href="../dashboard">
-                    <ListItemText primary="Dashboard" />
+                <ListItem button onClick={() => scrollToSection('benefits')}>
+                    <ListItemText primary="Benefits" />
+                </ListItem>
+                <ListItem button onClick={() => scrollToSection('testimonials')}>
+                    <ListItemText primary="Testimonials" />
+                </ListItem>
+                <ListItem button onClick={() => scrollToSection('pricing')}>
+                    <ListItemText primary="Pricing" />
+                </ListItem>
+                <ListItem button onClick={() => scrollToSection('contact')}>
+                    <ListItemText primary="Contact Us" />
+                </ListItem>
+                <ListItem button onClick={() => scrollToSection('about')}>
+                    <ListItemText primary="About Us" />
+                </ListItem>
+                <ListItem button onClick={() => scrollToSection('privacy')}>
+                    <ListItemText primary="Privacy Policy" />
                 </ListItem>
                 {session?.user ? (
                     <>
@@ -78,14 +102,24 @@ const Navbar: React.FC = () => {
                         <>
                             <Button
                                 color="inherit"
-                                onClick={scrollToAbout}
+                                onClick={handleMenuClick}
                                 sx={{ marginRight: 2, backgroundColor: 'transparent', color: 'inherit' }}
                             >
-                                About
+                                Menu
                             </Button>
-                            <Link href="../dashboard" color="inherit" underline="none" sx={{ marginRight: 2 }}>
-                                Dashboard
-                            </Link>
+                            <Menu
+                                anchorEl={anchorEl}
+                                open={Boolean(anchorEl)}
+                                onClose={handleMenuClose}
+                            >
+                                <MenuItem onClick={() => scrollToSection('intro')}>Intro</MenuItem>
+                                <MenuItem onClick={() => scrollToSection('benefits')}>Benefits</MenuItem>
+                                <MenuItem onClick={() => scrollToSection('testimonials')}>Testimonials</MenuItem>
+                                <MenuItem onClick={() => scrollToSection('pricing')}>Pricing</MenuItem>
+                                <MenuItem onClick={() => scrollToSection('contact')}>Contact Us</MenuItem>
+                                <MenuItem onClick={() => scrollToSection('about')}>About Us</MenuItem>
+                                <MenuItem onClick={() => scrollToSection('privacy')}>Privacy Policy</MenuItem>
+                            </Menu>
                             {session?.user ? (
                                 <div style={{ display: 'flex', alignItems: 'center' }}>
                                     <Avatar
