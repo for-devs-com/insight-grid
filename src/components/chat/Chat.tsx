@@ -37,8 +37,8 @@ export default function Chat({ onNewNode }) {
     }, [messages]);
 
     useEffect(() => {
-        if (messages.length === 0) {
-            setIsMessageListEmpty(true);
+        if (messages.length > 0) {
+            setIsMessageListEmpty(false);
         }
     }, [messages]);
 
