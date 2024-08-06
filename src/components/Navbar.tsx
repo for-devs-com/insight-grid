@@ -34,18 +34,8 @@ const Navbar: React.FC = () => {
     const drawer = (
         <div>
             <List>
-                <ListItem button onClick={() => scrollToSection('intro')}>
-                    <ListItemText primary="Intro" />
-                </ListItem>
-                <ListItem button onClick={() => scrollToSection('benefits')}>
-                    <ListItemText primary="Benefits" />
-                </ListItem>
-                <ListItem button onClick={() => scrollToSection('testimonials')}>
-                    <ListItemText primary="Testimonials" />
-                </ListItem>
-                <ListItem button onClick={() => scrollToSection('pricing')}>
-                    <ListItemText primary="Pricing" />
-                </ListItem>
+
+
                 <ListItem button onClick={() => scrollToSection('contact')}>
                     <ListItemText primary="Contact Us" />
                 </ListItem>
@@ -112,10 +102,7 @@ const Navbar: React.FC = () => {
                                 open={Boolean(anchorEl)}
                                 onClose={handleMenuClose}
                             >
-                                <MenuItem onClick={() => scrollToSection('intro')}>Intro</MenuItem>
-                                <MenuItem onClick={() => scrollToSection('benefits')}>Benefits</MenuItem>
-                                <MenuItem onClick={() => scrollToSection('testimonials')}>Testimonials</MenuItem>
-                                <MenuItem onClick={() => scrollToSection('pricing')}>Pricing</MenuItem>
+                                
                                 <MenuItem onClick={() => scrollToSection('contact')}>Contact Us</MenuItem>
                                 <MenuItem onClick={() => scrollToSection('about')}>About Us</MenuItem>
                                 <MenuItem onClick={() => scrollToSection('privacy')}>Privacy Policy</MenuItem>

@@ -29,6 +29,7 @@
     "openai": "^4.48.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-player": "^2.16.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

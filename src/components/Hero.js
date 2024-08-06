@@ -1,18 +1,28 @@
-"use client";
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { useSession, signIn } from 'next-auth/react';
+import dynamic from 'next/dynamic';
+
+// Importa ReactPlayer solo en el cliente
+const ReactPlayer = dynamic(() => import('react-player/youtube'), { ssr: false });
 
 const Hero = () => {
-    const [isAboutVisible, setIsAboutVisible] = useState(false);
+    const [isSectionVisible, setIsSectionVisible] = useState({ about: false });
 
     useEffect(() => {
         const handleScroll = () => {
-            const aboutElement = document.getElementById('about');
-            if (aboutElement) {
-                const rect = aboutElement.getBoundingClientRect();
-                setIsAboutVisible(rect.top <= window.innerHeight && rect.bottom >= 0);
-            }
+            const sections = ['intro', 'benefits', 'testimonials', 'pricing', 'contact', 'about', 'privacy'];
+            const updatedVisibility = { ...isSectionVisible };
+
+            sections.forEach((sectionId) => {
+                const sectionElement = document.getElementById(sectionId);
+                if (sectionElement) {
+                    const rect = sectionElement.getBoundingClientRect();
+                    updatedVisibility[sectionId] = rect.top <= window.innerHeight && rect.bottom >= 0;
+                }
+            });
+
+            setIsSectionVisible(updatedVisibility);
         };
 
         window.addEventListener('scroll', handleScroll);
@@ -21,10 +31,10 @@ const Hero = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const scrollToAbout = () => {
-        const aboutSection = document.getElementById('about');
-        if (aboutSection) {
-            aboutSection.scrollIntoView({ behavior: 'smooth' });
+    const scrollToSection = (sectionId) => {
+        const section = document.getElementById(sectionId);
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth' });
         }
     };
 
@@ -58,79 +68,94 @@ const Hero = () => {
                     boxShadow: 'none',
                 }}
             >
-                <iframe
-                    src="https://www.youtube.com/embed/JDzzOHCzBhE?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3"
-                    style={{
+                <style>
+                    {`
+            .ytp-chrome-top-buttons, .ytp-chrome-bottom, .ytp-share-button, .ytp-gradient-bottom, .ytp-chrome-controls {
+                display: none !important;
+            }
+        `}
+                </style>
+                <ReactPlayer
+                    url="https://www.youtube.com/watch?v=JDzzOHCzBhE"
+                    playing={true}
+                    loop={true}
+                    muted={true} // Asegura que el autoplay funcione
+                    controls={false}
+                    width="100%"
+                    height="100%"
+                    config={{
+                        youtube: {
+                            playerVars: {
+                                autoplay: 1,
+                                modestbranding: 1,
+                                rel: 0,
+                                showinfo: 0,
+                                iv_load_policy: 3,
+                                playsinline: 1
+                            }
+                        }
+                    }}
+                />
+                <Box
+                    sx={{
                         position: 'absolute',
                         top: 0,
                         left: 0,
                         width: '100%',
                         height: '100%',
-                        border: 'none',
-                        borderRadius: 0,
-                        margin: 0,
-                        padding: 0,
+                        backgroundColor: 'transparent',
+                        zIndex: 1,
                     }}
-                    title="Video"
-                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
                 />
             </Box>
+
+
+
             <Typography variant="h4" gutterBottom sx={{ fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' }, mt: 2 }}>
-                Bienvenido a InsightGrid
+                Welcome to InsightGrid
             </Typography>
             <Typography variant="body1" gutterBottom sx={{ fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' } }}>
-                Tu puerta de entrada a una gestión de datos más eficiente.
+                Your Gateway to Seamless Data Integration and Enhanced Decision-Making
+
             </Typography>
             <Button variant="contained" color="primary" size="large" sx={{ padding: { xs: '0.5rem 1rem', md: '1rem 2rem' }, mt: 2 }} onClick={() => signIn()}>
                 Get Started
             </Button>
-            <Box
-                id="about"
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minHeight: '100vh',
-                    width: '100vw',
-                    margin: 0,
-                    padding: 2,
-                    backgroundColor: '#f9f9f9',
-                    color: '#000',
-                    boxSizing: 'border-box',
-                }}
-            >
-                <Typography variant="h1" component="h1" sx={{ fontSize: { xs: '2rem', sm: '3rem', md: '4rem' }, marginBottom: 2 }}>
-                    Sobre InsightGrid
-                </Typography>
-                <Typography variant="body1" sx={{ fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' } }}>
-                    Bienvenido a InsightGrid, tu puerta de entrada a una integración de datos fluida y una toma de decisiones mejorada.
-                    Empoderando a las empresas con soluciones de datos inteligentes y escalables, InsightGrid se conecta sin esfuerzo a cualquier base de datos y muestra los datos a través de una interfaz de cuadrícula fácil de usar, impulsada por modelos de IA.
-                </Typography>
-                <Typography variant="h3" component="h2" sx={{ fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' }, marginBottom: 2 }}>
-                    Nuestro Valor
-                </Typography>
-                <ul className="list-disc list-inside mb-4">
-                    <li>Eliminar la codificación redundante</li>
-                    <li>Simplificar integraciones complejas</li>
-                    <li>Reducir la manipulación manual de datos</li>
-                </ul>
-                <Typography variant="h3" component="h2" sx={{ fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' }, marginBottom: 2 }}>
-                    Características Actuales
-                </Typography>
-                <ul className="list-disc list-inside mb-4">
-                    <li>Tablas de Datos Sin Costuras</li>
-                    <li>Selección de Tablas Personalizable</li>
-                    <li>Consulta en Lenguaje Natural (NLQ)</li>
-                </ul>
-                <Typography variant="h3" component="h2" sx={{ fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' }, marginBottom: 2 }}>
-                    ¿Por Qué Elegirnos?
-                </Typography>
-                <Typography variant="body1" sx={{ fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' } }}>
-                    Eficiencia y Colaboración, IA de Vanguardia y una Interfaz Amigable.
-                </Typography>
-            </Box>
+
+            <Section id="benefits" title="Benefits" content="Esta es la sección de beneficios. Aquí puedes enumerar los beneficios y características clave que los usuarios pueden obtener de tu plataforma." />
+            <Section id="testimonials" title="Testimonials" content="Esta es la sección de testimonios. Aquí puedes mostrar los comentarios y experiencias de tus usuarios o clientes satisfechos." />
+            <Section id="pricing" title="Pricing" content="Esta es la sección de precios. Aquí puedes detallar los diferentes planes y opciones de precios disponibles para tus servicios." />
+            <Section id="contact" title="Contact Us" content="Esta es la sección de contacto. Aquí puedes proporcionar información de contacto, como dirección de correo electrónico, número de teléfono y un formulario de contacto." />
+            <Section id="about" title="About Us" content="Esta es la sección sobre nosotros. Aquí puedes agregar información sobre tu empresa, misión, visión y valores." />
+            <Section id="privacy" title="Privacy Policy" content="Esta es la sección de política de privacidad. Aquí puedes detallar las políticas de privacidad y manejo de datos de tu plataforma." />
+        </Box>
+    );
+};
+
+const Section = ({ id, title, content }) => {
+    return (
+        <Box
+            id={id}
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: '100vh',
+                width: '100vw',
+                margin: 0,
+                padding: 2,
+                backgroundColor: '#f9f9f9',
+                color: '#000',
+                boxSizing: 'border-box',
+            }}
+        >
+            <Typography variant="h1" component="h1" sx={{ fontSize: { xs: '2rem', sm: '3rem', md: '4rem' }, marginBottom: 2 }}>
+                {title}
+            </Typography>
+            <Typography variant="body1" sx={{ fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' } }}>
+                {content}
+            </Typography>
         </Box>
     );
 };
