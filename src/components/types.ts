@@ -25,3 +25,11 @@ export type InteractiveCanvasState = {
     setIsConnected: (connected: boolean) => void;
     setNodeData: (id: string, data: any) => void;
 };
+
+export type Role = 'user' | 'assistant' | 'system' | 'tool';
+
+export interface Message {
+    id: string;
+    role: Role;
+    content: string;
+}
