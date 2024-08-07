@@ -12,7 +12,7 @@ import useStore from '@/store/useStore';
 import NodeMenu from './nodes/NodeMenu';
 import { nodeTypes } from '@/components/InteractiveCanvas.constants';
 import { useShallow } from "zustand/react/shallow";
-import { AppNode, InteractiveCanvasState } from "@/components/nodes/types";
+import { AppNode, InteractiveCanvasState } from "@/components/types";
 import '@xyflow/react/dist/style.css';
 import '@xyflow/react/dist/base.css';
 
