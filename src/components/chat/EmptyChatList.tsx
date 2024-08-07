@@ -1,24 +1,35 @@
 import React from 'react';
+import {Message, Role} from "@/components/types";
+import {v4 as uuidv4} from "uuid";
 
 const exampleMessages = [
     {
         heading: 'Create a new database connection',
-        message: 'Click on "Add Database Connection" to get started.'
+        message: 'Click on "Add Database Connection" to get started.',
+        role: 'user' as Role // role for user-generated messages
     },
     {
         heading: 'Show me the latest data insights',
-        message: 'Show me the latest data insights.'
+        message: 'Show me the latest data insights.',
+        role: 'user' as Role
     },
     {
         heading: 'What are CRUD operations?',
-        message: 'What are CRUD operations?'
+        message: 'What are CRUD operations?',
+        role: 'user' as Role
     }
 ];
 
-export default function EmptyChatList({ submitMessage }: { submitMessage: (message: string) => void }) {
-    const handleExampleButtonClick = (message: string) => {
-        console.log('handleExampleButtonClick', message);
-        submitMessage(message);
+
+export default function EmptyChatList({ addMessage }: { addMessage: (message: Message) => void }) {
+    const handleExampleButtonClick = (example: { heading: string, message: string, role: Role }) => {
+        const message = {
+            id: uuidv4(),
+            content: example.message,
+            role: example.role
+        };
+        console.log('Adding message:', message);
+        addMessage(message);
     }
 
     return (
@@ -36,7 +47,7 @@ export default function EmptyChatList({ submitMessage }: { submitMessage: (messa
                         <button
                             key={index}
                             className="w-full text-left bg-white border border-gray-300 rounded px-4 py-2 hover:bg-gray-100"
-                            onClick={() => handleExampleButtonClick(example.message)}
+                            onClick={() => handleExampleButtonClick(example)}
                         >
                             {example.heading}
                         </button>
