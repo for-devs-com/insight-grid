@@ -1,16 +1,18 @@
 'use client';
 
-import { useChat } from 'ai/react';
-import { useSession } from 'next-auth/react';
-import React, { useEffect, useRef, useState } from 'react';
+import {useChat} from 'ai/react';
+import {useSession} from 'next-auth/react';
+import React, {useEffect, useRef, useState} from 'react';
 import DatabaseConnBtn from './DatabaseConnBtn';
 import ChatList from './ChatList';
 import EmptyChatList from './EmptyChatList';
 import {suggestDatabaseConnection} from "@/app/actions";
+import {Message, Role} from "@/components/types";
+import {v4 as uuidv4} from "uuid";
 
-export default function Chat({ onNewNode }) {
-    const { messages, input, handleInputChange, handleSubmit } = useChat();
-    const { data: session, status } = useSession();
+export default function Chat({onNewNode}) {
+    const {messages, setMessages, input, handleInputChange, handleSubmit} = useChat();
+    const {data: session, status} = useSession();
     const [inputValue, setInputValue] = useState('');
     const [showExampleButtons, setShowExampleButtons] = useState(true);
     const chatFormRef = useRef<HTMLFormElement>(null);
@@ -32,7 +34,7 @@ export default function Chat({ onNewNode }) {
 
     useEffect(() => {
         if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+            messagesEndRef.current.scrollIntoView({behavior: 'smooth'});
         }
     }, [messages]);
 
@@ -50,24 +52,41 @@ export default function Chat({ onNewNode }) {
 
     const handleNewMessageFromSuggestion = (message: { content: string; role: string }) => {
         const customEvent = {
-            preventDefault: () => {},
-            target: { value: message.content },
+            preventDefault: () => {
+            },
+            target: {value: message.content},
         };
         handleSubmit(customEvent as any);
     };
 
     const handleNewMessageFromExampleButtons = (content: string) => {
-        const customEvent = {
-            preventDefault: () => {},
-            target: { value: content },
-        };
-        handleSubmit(customEvent as any);
+        handleSubmit({
+            preventDefault: () => {
+            },
+            target: {value: content}
+        } as any);
         setShowExampleButtons(false);
+
     };
 
-    const handleExampleButtonClick = (newMessage: string) => {
-        handleNewMessageFromExampleButtons(newMessage);
+    const handleExampleButtonClick = (exampleMessage: { content: string, role: string }) => {
+        handleNewMessageFromExampleButtons(exampleMessage.content);
     };
+
+    const addMessage = (message: { content: string, role: Role }) => {
+        const newMessage = {id: uuidv4(), role: message.role, content: message.content};
+        setMessages((prevMessages: Message[]) => [
+            ...prevMessages, newMessage
+        ]);
+        if (message.role === 'user') {
+            handleSubmit({
+                preventDefault: () => {
+                },
+                target: {value: message.content}
+            } as any);
+        }
+        /*handleNewMessageFromExampleButtons(message.content);*/
+    }
 
     const addNodeToCanvas = (node) => {
         onNewNode(node);
@@ -97,11 +116,11 @@ export default function Chat({ onNewNode }) {
         <div className="flex flex-col h-full overflow-auto p-4 border-l border-gray-300 bg-white">
             <div className="flex-grow overflow-y-auto border-b border-gray-300 p-4">
                 {isMessageListEmpty ? (
-                    <EmptyChatList submitMessage={handleExampleButtonClick} />
+                    <EmptyChatList addMessage={addMessage}/>
                 ) : (
                     <>
-                        <ChatList messages={messages} />
-                        <div ref={messagesEndRef} />
+                        <ChatList messages={messages}/>
+                        <div ref={messagesEndRef}/>
                     </>
                 )}
             </div>
