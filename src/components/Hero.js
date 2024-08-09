@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Button, IconButton } from '@mui/material';
+import { Box, Typography, Button, TextField, Grid } from '@mui/material';
 import { useSession, signIn } from 'next-auth/react';
 import dynamic from 'next/dynamic';
-import PushPinIcon from '@mui/icons-material/PushPin';
 
 // Importa ReactPlayer solo en el cliente
 const ReactPlayer = dynamic(() => import('react-player/youtube'), { ssr: false });
@@ -27,10 +26,10 @@ const Hero = () => {
         };
 
         window.addEventListener('scroll', handleScroll);
-        handleScroll(); // Ejecutar la función al montar el componente
+        handleScroll();
 
         return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    }, [isSectionVisible]);
 
     const scrollToSection = (sectionId) => {
         const section = document.getElementById(sectionId);
@@ -49,11 +48,12 @@ const Hero = () => {
                 minHeight: '100vh',
                 width: '100vw',
                 textAlign: 'center',
-                backgroundColor: '#ffffff', // Fondo principal
+                backgroundColor: '#ffffff',
                 padding: 0,
                 margin: 0,
                 boxSizing: 'border-box',
                 overflowX: 'hidden',
+                fontFamily: 'Poppins, sans-serif',
             }}
         >
             <Box
@@ -80,7 +80,7 @@ const Hero = () => {
                     url="https://www.youtube.com/watch?v=JDzzOHCzBhE"
                     playing={true}
                     loop={true}
-                    muted={true} // Asegura que el autoplay funcione
+                    muted={true}
                     controls={false}
                     width="100%"
                     height="100%"
@@ -100,28 +100,39 @@ const Hero = () => {
                 <Box
                     sx={{
                         position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        backgroundColor: 'transparent',
+                        bottom: '300px',
+                        left: '200px',
                         zIndex: 1,
                     }}
-                />
+                >
+                    <Button variant="contained" color="primary" size="large" sx={{ backgroundColor: '#5cb660', padding: '1rem 2rem', '&:hover': { backgroundColor: '#4ca750' } }} onClick={() => signIn()}>
+                        Get Started
+                    </Button>
+                </Box>
             </Box>
 
-            <Typography variant="h4" gutterBottom sx={{ fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' }, mt: 2 }}>
-                Welcome to InsightGrid
-            </Typography>
-            <Typography variant="body1" gutterBottom sx={{ fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' } }}>
-                Your Gateway to Seamless Data Integration and Enhanced Decision-Making
-            </Typography>
-            <Button variant="contained" color="primary" size="large" sx={{ backgroundColor: '#5cb660', padding: { xs: '0.5rem 1rem', md: '1rem 2rem' }, mt: 2, '&:hover': { backgroundColor: '#4ca750' } }} onClick={() => signIn()}>
-                Get Started
-            </Button>
+            {/* Sección "About Us" */}
+            <Box id="about" sx={{ textAlign: 'center', maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
+                <Typography
+                    variant="h2"
+                    sx={{
+                        fontSize: '60px',
+                        lineHeight: '60px',
+                        color: '#282828',
+                        fontFamily: 'Inter, sans-serif',
+                        fontWeight: 800,
+                    }}
+                >
+                    Bienvenido a InsightGrid
+                </Typography>
+                <Typography variant="body1" sx={{ fontSize: '1.25rem', color: '#282828', marginTop: '1rem' }}>
+                    InsightGrid es una aplicación que utiliza el Dynamic Query Engine como su motor de backend. Su propósito principal es permitir a los usuarios conectar sus bases de datos a través de una interfaz de usuario intuitiva (UI). Una vez conectados, los usuarios pueden transferir sus datos a un sistema de inteligencia artificial (IA) para realizar exploraciones y análisis avanzados. Actualmente, InsightGrid se centra en facilitar la conexión y el procesamiento de datos, habilitando a los usuarios para que aprovechen el poder de la IA en la exploración de sus bases de datos.
+                </Typography>
+            </Box>
 
-            <Section id="about" title="About Us" content="Esta es la sección sobre nosotros. Aquí puedes agregar información sobre tu empresa, misión, visión y valores." />
-            <Section id="contact" title="Contact Us" content={<ContactUsContent />} />
+            {/* Sección "Contact Us" con disposición horizontal */}
+            <Section id="contact" title="Contact Us" content={<ContactUsSection />} />
+
             <Section id="privacy" title="Privacy Policy" content="Esta es la sección de política de privacidad. Aquí puedes detallar las políticas de privacidad y manejo de datos de tu plataforma." />
         </Box>
     );
@@ -140,165 +151,122 @@ const Section = ({ id, title, content }) => {
                 width: '100vw',
                 margin: 0,
                 padding: 2,
-                backgroundColor: '#ffffff', // Fondo principal de la sección
+                backgroundColor: '#ffffff',
                 color: '#000',
                 boxSizing: 'border-box',
                 border: 'none',
                 borderRadius: 0,
                 '&:not(:first-of-type)': {
-                    mt: 4, // Margen superior para separar las secciones
+                    mt: 4,
                 },
-                position: 'relative', // Necesario para posicionar el ícono
+                position: 'relative',
             }}
         >
-            {/* Ícono de chinche en la parte superior central */}
-            {(id === 'contact' || id === 'about') && (
-                <IconButton
-                    sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        zIndex: 10,
-                        color: '#ff5722', // Color del ícono
-                        mt: 2,
-                        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.3)', // Sombra del ícono
-                        borderRadius: '50%', // Redondear el fondo
-                        backgroundColor: '#fff', // Fondo blanco detrás del ícono
-                        '&:hover': {
-                            color: '#e64a19',
-                            boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.4)',
-                        },
-                    }}
-                >
-                    <PushPinIcon />
-                </IconButton>
-            )}
-
-            {id === 'contact' || id === 'about' ? (
-                <Box
-                    sx={{
-                        backgroundColor: '#f9f9f9', // Fondo de la caja de contacto y about
-                        padding: 4,
-                        borderRadius: 2,
-                        boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.2)', // Más sombra
-                        width: '100%',
-                        maxWidth: '800px', // Tamaño máximo de la caja
-                        boxSizing: 'border-box',
-                    }}
-                >
-                    <Typography variant="h1" component="h1" sx={{ fontSize: { xs: '2rem', sm: '3rem', md: '4rem' }, marginBottom: 2 }}>
-                        {title}
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' } }}>
-                        {content}
-                    </Typography>
-                </Box>
-            ) : (
-                <Box
-                    sx={{
-                        width: '100%',
-                        maxWidth: '800px', // Tamaño máximo de la sección
-                        padding: 2,
-                        boxSizing: 'border-box',
-                    }}
-                >
-                    <Typography variant="h1" component="h1" sx={{ fontSize: { xs: '2rem', sm: '3rem', md: '4rem' }, marginBottom: 2 }}>
-                        {title}
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' } }}>
-                        {content}
-                    </Typography>
-                </Box>
-            )}
+            <Typography
+                variant="h4"
+                gutterBottom
+                sx={{
+                    fontSize: '2.5rem',
+                    lineHeight: '3rem',
+                    color: '#282828',
+                    fontFamily: 'Inter, sans-serif',
+                    fontWeight: 800,
+                }}
+            >
+                {title}
+            </Typography>
+            <Box sx={{ width: '100%', maxWidth: '800px', textAlign: 'center', fontFamily: 'Poppins, sans-serif' }}>{content}</Box>
         </Box>
     );
 };
 
-const ContactUsContent = () => {
+const ContactUsSection = () => {
     return (
-        <Box textAlign="left">
-            <Typography variant="h6" gutterBottom>
-                We’re Here to Help!
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-                Whether you have a question about features, pricing, need a demo, or anything else, our team is ready to answer all your questions.
-            </Typography>
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', md: 'row' },
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                width: '100%',
+                maxWidth: '800px',
+                backgroundColor: '#f9f9f9',
+                padding: 4,
+                borderRadius: 2,
+                boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.2)',
+            }}
+        >
+            <Box sx={{ width: { xs: '100%', md: '50%' }, paddingRight: { md: 4 } }}>
+                <Typography variant="h6" gutterBottom>
+                    Contact Information
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                    <strong>Email:</strong> support@insightgrid.com
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                    <strong>Phone:</strong> +1 (201) 839-7748
+                </Typography>
+            </Box>
 
-            <Typography variant="h6" gutterBottom>
-                Customer Support
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-                For technical support or product inquiries, please contact our support team.
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-                <strong>Email:</strong> support@insightgrid.com
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-                <strong>Phone:</strong> +1 (800) 123-4567
-            </Typography>
-
-            <Typography variant="h6" gutterBottom>
-                Sales Inquiries
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-                Want to learn more about our enterprise solutions? Contact our sales team.
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-                <strong>Email:</strong> sales@insightgrid.com
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-                <strong>Phone:</strong> +1 (800) 765-4321
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-                <strong>Request a Demo:</strong> Schedule a Demo
-            </Typography>
-
-            <Typography variant="h6" gutterBottom>
-                Partnership Opportunities
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-                We’re always looking to collaborate with like-minded businesses. If you’re interested in partnership opportunities, we’d love to hear from you.
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-                <strong>Email:</strong> partnerships@insightgrid.com
-            </Typography>
-
-            <Typography variant="h6" gutterBottom>
-                Media Inquiries
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-                For press releases, interviews, or media-related questions, please contact our media relations team.
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-                <strong>Email:</strong> media@insightgrid.com
-            </Typography>
-
-            <Typography variant="h6" gutterBottom>
-                General Inquiries
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-                For any other questions or comments, feel free to get in touch with us.
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-                <strong>Email:</strong> info@insightgrid.com
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-                <strong>Office Address:</strong> InsightGrid Inc., 1234 Innovation Way, Tech City, CA 94043, USA
-            </Typography>
-
-            <Typography variant="h6" gutterBottom>
-                Social Media
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-                Stay connected with us on social media for the latest updates, news, and insights.
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-                <strong>Twitter:</strong> @InsightGrid
-            </Typography>
+            <Box sx={{ width: { xs: '100%', md: '50%' } }}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <TextField
+                            label="First Name"
+                            variant="outlined"
+                            fullWidth
+                            InputProps={{
+                                sx: {
+                                    borderRadius: '16px'
+                                }
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            label="Last Name"
+                            variant="outlined"
+                            fullWidth
+                            InputProps={{
+                                sx: {
+                                    borderRadius: '16px'
+                                }
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            label="Email Address"
+                            variant="outlined"
+                            fullWidth
+                            InputProps={{
+                                sx: {
+                                    borderRadius: '16px'
+                                }
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            label="Phone Number"
+                            variant="outlined"
+                            fullWidth
+                            InputProps={{
+                                sx: {
+                                    borderRadius: '16px'
+                                }
+                            }}
+                        />
+                    </Grid>
+                </Grid>
+                <Box sx={{ textAlign: 'center', marginTop: 2 }}>
+                    <Button variant="contained" color="primary" sx={{ backgroundColor: '#5cb660', '&:hover': { backgroundColor: '#4ca750' } }}>
+                        Enviar
+                    </Button>
+                </Box>
+            </Box>
         </Box>
     );
 };
-
 
 export default Hero;
