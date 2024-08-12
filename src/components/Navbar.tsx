@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Typography, Button, Avatar, Link, IconButton, Drawer, List, ListItem, ListItemText, useMediaQuery, useTheme, Menu, MenuItem } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Avatar, IconButton, Drawer, List, ListItem, ListItemText, useMediaQuery, useTheme, Menu, MenuItem } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useSession, signIn, signOut } from 'next-auth/react';
+import Link from 'next/link';  // Asegúrate de importar Link desde next/link
 
 const Navbar: React.FC = () => {
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -34,15 +35,13 @@ const Navbar: React.FC = () => {
     const drawer = (
         <div>
             <List>
-
-
                 <ListItem button onClick={() => scrollToSection('contact')}>
                     <ListItemText primary="Contact Us" />
                 </ListItem>
                 <ListItem button onClick={() => scrollToSection('about')}>
                     <ListItemText primary="About Us" />
                 </ListItem>
-                <ListItem button onClick={() => scrollToSection('privacy')}>
+                <ListItem button component={Link} href="/privacy-policy">
                     <ListItemText primary="Privacy Policy" />
                 </ListItem>
                 {session?.user ? (
@@ -102,10 +101,9 @@ const Navbar: React.FC = () => {
                                 open={Boolean(anchorEl)}
                                 onClose={handleMenuClose}
                             >
-                                
                                 <MenuItem onClick={() => scrollToSection('contact')}>Contact Us</MenuItem>
                                 <MenuItem onClick={() => scrollToSection('about')}>About Us</MenuItem>
-                                <MenuItem onClick={() => scrollToSection('privacy')}>Privacy Policy</MenuItem>
+                                <MenuItem> <Link href="">privacy policy</Link></MenuItem>
                             </Menu>
                             {session?.user ? (
                                 <div style={{ display: 'flex', alignItems: 'center' }}>

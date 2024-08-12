@@ -11,7 +11,7 @@ const Hero = () => {
 
     useEffect(() => {
         const handleScroll = () => {
-            const sections = ['intro', 'benefits', 'testimonials', 'pricing', 'contact', 'about', 'privacy'];
+            const sections = ['intro', 'benefits', 'testimonials', 'pricing', 'contact', 'about'];
             const updatedVisibility = { ...isSectionVisible };
 
             sections.forEach((sectionId) => {
@@ -132,8 +132,6 @@ const Hero = () => {
 
             {/* Sección "Contact Us" con disposición horizontal */}
             <Section id="contact" title="Contact Us" content={<ContactUsSection />} />
-
-            <Section id="privacy" title="Privacy Policy" content="Esta es la sección de política de privacidad. Aquí puedes detallar las políticas de privacidad y manejo de datos de tu plataforma." />
         </Box>
     );
 };
