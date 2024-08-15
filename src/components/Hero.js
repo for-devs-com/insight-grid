@@ -71,10 +71,10 @@ const Hero = () => {
             >
                 <style>
                     {`
-                        .ytp-chrome-top-buttons, .ytp-chrome-bottom, .ytp-share-button, .ytp-gradient-bottom, .ytp-chrome-controls {
-                            display: none !important;
-                        }
-                    `}
+            .ytp-chrome-top-buttons, .ytp-chrome-bottom, .ytp-share-button, .ytp-gradient-bottom, .ytp-chrome-controls {
+                display: none !important;
+            }
+        `}
                 </style>
                 <ReactPlayer
                     url="https://www.youtube.com/watch?v=JDzzOHCzBhE"
@@ -87,7 +87,7 @@ const Hero = () => {
                     config={{
                         youtube: {
                             playerVars: {
-                                autoplay: 0,
+                                autoplay: 1,
                                 modestbranding: 1,
                                 rel: 0,
                                 showinfo: 0,
@@ -99,17 +99,31 @@ const Hero = () => {
                 />
                 <Box
                     sx={{
-                        position: 'absolute',
-                        bottom: '300px',
-                        left: '200px',
+                        position: 'absolute', // Cambiar a 'absolute' para ajustar la posición
+                        bottom: '20px', // Ajusta la posición vertical
+                        left: '50%', // Centramos horizontalmente
+                        transform: 'translateX(-50%)', // Centramos el botón
                         zIndex: 1,
                     }}
                 >
-                    <Button variant="contained" color="primary" size="large" sx={{ backgroundColor: '#5cb660', padding: '1rem 2rem', '&:hover': { backgroundColor: '#4ca750' } }} onClick={() => signIn()}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        size="large"
+                        sx={{
+                            backgroundColor: '#5cb660',
+                            padding: '1rem 2rem',
+                            '&:hover': {
+                                backgroundColor: '#4ca750',
+                            },
+                        }}
+                        onClick={() => signIn()}
+                    >
                         Get Started
                     </Button>
                 </Box>
             </Box>
+
 
             {/* Sección "About Us" */}
             <Box id="about" sx={{ textAlign: 'center', maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
