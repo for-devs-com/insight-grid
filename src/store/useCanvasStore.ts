@@ -2,9 +2,9 @@
 import { create } from 'zustand';
 import { createJSONStorage, devtools, persist } from 'zustand/middleware';
 import { addEdge, applyNodeChanges, applyEdgeChanges, Edge } from '@xyflow/react';
-import { AppNode, InteractiveCanvasState } from "@/components/types";
+import { AppNode, InteractiveCanvasState } from "@/lib/types";
 
-const useStore = create<InteractiveCanvasState>()(
+const useCanvasStore = create<InteractiveCanvasState>()(
 	devtools(
 		persist(
 			(set, get) => {
@@ -61,4 +61,4 @@ const useStore = create<InteractiveCanvasState>()(
 	)
 );
 
-export default useStore;
+export default useCanvasStore;
