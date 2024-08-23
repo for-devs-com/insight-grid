@@ -8,8 +8,8 @@ const Navbar: React.FC = () => {
     const { data: session } = useSession();
 
     return (
-        <nav className="bg-blue-600 text-white w-full">
-            <div className="container mx-auto px-4 py-2 flex justify-between items-center">
+        <nav className="bg-blue-600 text-white w-full fixed top-0 left-0 right-0 z-50">
+            <div className="container mx-auto px-4 py-3 flex justify-between items-center">
                 <div className="flex items-center">
                     <Link href="/">
                         for-devs.com
