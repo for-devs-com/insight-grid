@@ -1,15 +1,16 @@
 'use client';
 import React, {useEffect, useState} from 'react';
-import { useSession, signIn } from 'next-auth/react';
+import { useSession, signIn} from 'next-auth/react';
 import InteractiveCanvas from "@/components/InteractiveCanvas";
 import Chat from "@/components/chat/Chat";
-import useStore from "@/store/useStore";
+import useCanvasStore from "@/store/useCanvasStore";
+import Workspace from "@/components/Workspace";
 
 
 export default function Page() {
     const { data: session, status } = useSession();
     const [newElements, setNewElements] = useState([]);
-    const setNodes = useStore((state) => state.setNodes);
+    const setNodes = useCanvasStore((state) => state.setNodes);
 
     const handleNewNode = (node: any) => {
         setNewElements((prev) => [...prev, node]);
@@ -35,19 +36,33 @@ export default function Page() {
     }
 
     return (
-        <div className="flex h-screen w-screen overflow-hidden">
-            {/* Main Content */}
+        /*<div className="flex h-screen w-screen overflow-hidden mt-14">
+            {/!* Main Content *!/}
             <div className="flex flex-grow">
-                {/* Interactive Canvas Box */}
+                {/!* Interactive Canvas Box *!/}
                 <div className="flex-grow overflow-auto">
                     <InteractiveCanvas newElements={newElements} />
                 </div>
 
-                {/* Chat Box */}
+                {/!* Chat Box *!/}
                 <div className="w-1/3 flex flex-col overflow-auto">
                     <Chat onNewNode={handleNewNode} />
                 </div>
             </div>
-        </div>
+        </div>*/
+
+
+        <Workspace
+            conversationId="1"
+            newElements={newElements}
+            onNewNode={handleNewNode}
+            onMessage={(message, append) => {
+                console.log('Message:', message);}
+            }
+            visibility='local'
+
+
+        />
+
     );
 }
