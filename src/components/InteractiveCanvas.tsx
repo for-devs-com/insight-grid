@@ -8,11 +8,11 @@ import {
     Controls,
     Background,
 } from '@xyflow/react';
-import useStore from '@/store/useStore';
+import useCanvasStore from '@/store/useCanvasStore';
 import NodeMenu from './nodes/NodeMenu';
 import { nodeTypes } from '@/components/InteractiveCanvas.constants';
 import { useShallow } from "zustand/react/shallow";
-import { AppNode, InteractiveCanvasState } from "@/components/types";
+import { AppNode, InteractiveCanvasState } from "@/lib/types";
 import '@xyflow/react/dist/style.css';
 import '@xyflow/react/dist/base.css';
 
@@ -49,7 +49,7 @@ const LayoutFlow = (newElements: any) => {
         isConnected,
         setIsConnected,
 
-    } = useStore(useShallow(selector));
+    } = useCanvasStore(useShallow(selector));
 
     // State for the Node Menu
     const [nodeMenuOpen, setNodeMenuOpen] = useState(false);
@@ -92,9 +92,9 @@ const LayoutFlow = (newElements: any) => {
     }, [nodes, fitView, setNodes]);
 
     return (
-        // Interactive Canvas
-        <div className="flex flex-col h-full bg-gray-900">
-            // Node Menu
+        /*Interactive Canvas*/
+        <div className="flex flex-col h-full w-full bg-gray-900">
+            {/* Node Menu*/}
             <div className="flex justify-between items-center p-4 bg-gray-800 border-b border-gray-700">
                 <button
                     onClick={() => setNodeMenuOpen(true)}
@@ -106,16 +106,16 @@ const LayoutFlow = (newElements: any) => {
                     open={nodeMenuOpen}
                     onClose={() => setNodeMenuOpen(false)}
                 />
-                *<button
+                <button
                     onClick={onLayout}
                     className="bg-blue-500 text-white px-4 py-2 rounded"
                 >
                     Reorganize Nodes
-                </button>*
+                </button>
             </div>
 
-            // Interactive Canvas
-            <div className="flex-grow relative">
+            {/*Interactive Canvas*/}
+            <div className="flex-grow relative h-full w-full">
                 <ReactFlow
                     nodes={nodes}
                     edges={edges}
@@ -142,7 +142,7 @@ const LayoutFlow = (newElements: any) => {
     );
 };
 
-// InteractiveCanvas component
+/*InteractiveCanvas component*/
 export default function InteractiveCanvas({ newElements}) {
     return (
         <ReactFlowProvider>
