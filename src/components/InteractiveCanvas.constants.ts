@@ -1,4 +1,4 @@
-import { AppNode } from "@/components/types";
+import { AppNode } from "@/lib/types";
 import { Edge } from "@xyflow/react";
 import DatabaseConnectionNode from "@/components/nodes/DatabaseConnectionNode";
 import InputNode from "@/components/nodes/InputNode";
