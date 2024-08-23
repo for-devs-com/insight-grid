@@ -4,12 +4,12 @@ import React, {useEffect, useState} from 'react';
 import {Handle, Position} from '@xyflow/react';
 import DatabaseConnectionForm from '../DatabaseConnectionForm';
 import DynamicTables from "@/components/DynamicTables";
-import useStore from "@/store/useStore";
+import useCanvasStore from "@/store/useCanvasStore";
 
 const DatabaseConnectionNode = ({id}) => {
     /*const [isConnected, setIsConnected] = useState(false);*/
-    const isConnected = useStore((state) => state.nodes.find((node) => node.id === id)?.data?.isConnected || false);
-    const setNodeData = useStore((state) => state.setNodeData);
+    const isConnected = useCanvasStore((state) => state.nodes.find((node) => node.id === id)?.data?.isConnected || false);
+    const setNodeData = useCanvasStore((state) => state.setNodeData);
 
     const handleConnectionSuccess = () => {
         /*setIsConnected(true);*/
