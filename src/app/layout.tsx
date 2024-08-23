@@ -1,7 +1,7 @@
 'use client';
 
 import {Inter} from "next/font/google";
-import {Providers} from "@/app/Providers";
+import {Providers} from "@/components/Providers";
 import Navbar from "@/components/Navbar";
 import React from "react";
 import "@/app/globals.css";
@@ -15,9 +15,9 @@ export default function RootLayout({children}) {
         <Providers>
             {/* Main Layout */}
             <div className="flex flex-col ">
-                {/* Navbar */}
-                <Navbar/>
-                <main className="flex-grow">
+                <main className="flex-grow mt-0">
+                    {/* Navbar */}
+                    <Navbar/>
                     {children}
                 </main>
             </div>
