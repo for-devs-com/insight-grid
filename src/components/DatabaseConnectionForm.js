@@ -1,150 +1,179 @@
-import {useState} from 'react';
-import {useEffect} from 'react';
-import {useRouter} from 'next/navigation';
-import {Container, Box, Typography, TextField, Button} from "@mui/material";
+'use client'
 
-export default function DatabaseConnectionForm({onConnectionSuccess}) {
-    const router = useRouter();
+import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import {
+    Container,
+    Box,
+    Typography,
+    TextField,
+    Button,
+    MenuItem,
+    Paper,
+    Alert,
+    CircularProgress,
+} from "@mui/material"
+import { DatabaseIcon, ServerIcon, UserIcon, KeyIcon } from 'lucide-react'
+
+const databaseManagers = [
+    { value: 'postgresql', label: 'PostgreSQL' },
+    { value: 'mysql', label: 'MySQL' },
+    { value: 'sqlserver', label: 'SQL Server' },
+]
+
+export default function DatabaseConnectionForm({ onConnectionSuccess }) {
+    const router = useRouter()
+    const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState(null)
+    const [formData, setFormData] = useState({
+        databaseManager: 'postgresql',
+        host: 'localhost',
+        port: 5432,
+        databaseName: 'for-devs-university',
+        user: 'postgres',
+        password: '',
+    })
+
     useEffect(() => {
+        if (!router.isReady) return
+        console.log('Database Connection Form mounted')
+    }, [router.isReady])
 
-            if (!router.isReady) return;
-            console.log('Database Connection Form mounted');
-        },
-        [router.isReady]);
+    const handleChange = (event) => {
+        const { name, value } = event.target
+        setFormData(prevData => ({
+            ...prevData,
+            [name]: value
+        }))
+    }
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
-    const [error, setError] = useState(null);
-    const [databaseManager, setDatabaseManager] = useState('postgresql');
-    const [host, setHost] = useState('localhost');
-    const [port, setPort] = useState(5432);
-    const [databaseName, setDatabaseName] = useState('for-devs-university');
-    const [user, setUser] = useState('postgres');
-    const [password, setPassword] = useState('qwerty');
     const handleSubmit = async (event) => {
-        event.preventDefault();
-        const connectionData = {
-            databaseManager,
-            host,
-            port,
-            databaseName,
-            user,
-            password
-        };
+        event.preventDefault()
+        setIsLoading(true)
+        setError(null)
+
         try {
-            // Realizar la petición POST al servidor
-            const response = await fetch(`${apiUrl}/api/connect-database`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/connect-database`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(connectionData)
-            });
-            // Manejar la respuesta
+                body: JSON.stringify(formData)
+            })
+
             if (response.ok) {
-                onConnectionSuccess();
-
+                onConnectionSuccess()
             } else {
-                // Mostrar mensaje de error
-                const errorMsg = await response.text();
-                setError(`Conexión fallida: ${errorMsg}`);
+                const errorMsg = await response.text()
+                setError(`Connection failed: ${errorMsg}`)
             }
-
         } catch (error) {
-            // Manejar el error
-            console.error('Error al conectar con la base de datos', error);
-            setError('Error al conectar con la base de datos');
+            console.error('Error connecting to the database', error)
+            setError('Error connecting to the database')
+        } finally {
+            setIsLoading(false)
         }
+    }
 
-    };
-
-
-    return <Container component="main" maxWidth="xs">
-        <Box
-            sx={{
-                marginTop: 8,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-            }}
-        >
-            <Typography component="h1" variant="h5">
-                Database Connection Form
-            </Typography>
-            <Box component="form" noValidate sx={{mt: 1}} onSubmit={handleSubmit}>
-                <TextField
-                    margin="normal"
-                    fullWidth
-                    id="databaseManager"
-                    label="Database Manager"
-                    name="databaseManager"
-                    value={databaseManager}
-                    onChange={(e) => setDatabaseManager(e.target.value)}
-                    autoFocus
-                />
-                <TextField
-                    margin="normal"
-                    fullWidth
-                    id="host"
-                    label="Host"
-                    name="host"
-                    value={host}
-                    onChange={(e) => setHost(e.target.value)}
-                />
-                <TextField
-                    margin="normal"
-                    fullWidth
-                    name="port"
-                    label="Port"
-                    id="port"
-                    type="number"
-                    value={port}
-                    onChange={(e) => setPort(e.target.value)}
-                />
-                <TextField
-                    margin="normal"
-                    fullWidth
-                    id="databaseName"
-                    label="Database Name"
-                    name="databaseName"
-                    value={databaseName}
-                    onChange={(e) => setDatabaseName(e.target.value)}
-                />
-                <TextField
-                    margin="normal"
-                    fullWidth
-                    id="user"
-                    label="User"
-                    name="user"
-                    value={user}
-                    onChange={(e) => setUser(e.target.value)}
-                />
-                <TextField
-                    margin="normal"
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    autoComplete="current-password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-                {error && (
-                    <Typography color="error" variant="body2">
-                        {error}
-                    </Typography>
-                )}
-                <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    sx={{mt: 3, mb: 2}}
-                >
-                    Connect
-                </Button>
-            </Box>
-        </Box>
-    </Container>
-
+    return (
+        <Container component="main" maxWidth="sm">
+            <Paper elevation={3} sx={{ mt: 8, p: 4, borderRadius: 2 }}>
+                <Typography component="h1" variant="h4" align="center" gutterBottom>
+                    Connect to Database
+                </Typography>
+                <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+                    <TextField
+                        select
+                        margin="normal"
+                        fullWidth
+                        id="databaseManager"
+                        label="Database Manager"
+                        name="databaseManager"
+                        value={formData.databaseManager}
+                        onChange={handleChange}
+                        InputProps={{
+                            startAdornment: <DatabaseIcon size={20} style={{ marginRight: 8 }} />,
+                        }}
+                    >
+                        {databaseManagers.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                    <TextField
+                        margin="normal"
+                        fullWidth
+                        id="host"
+                        label="Host"
+                        name="host"
+                        value={formData.host}
+                        onChange={handleChange}
+                        InputProps={{
+                            startAdornment: <ServerIcon size={20} style={{ marginRight: 8 }} />,
+                        }}
+                    />
+                    <TextField
+                        margin="normal"
+                        fullWidth
+                        name="port"
+                        label="Port"
+                        id="port"
+                        type="number"
+                        value={formData.port}
+                        onChange={handleChange}
+                    />
+                    <TextField
+                        margin="normal"
+                        fullWidth
+                        id="databaseName"
+                        label="Database Name"
+                        name="databaseName"
+                        value={formData.databaseName}
+                        onChange={handleChange}
+                    />
+                    <TextField
+                        margin="normal"
+                        fullWidth
+                        id="user"
+                        label="User"
+                        name="user"
+                        value={formData.user}
+                        onChange={handleChange}
+                        InputProps={{
+                            startAdornment: <UserIcon size={20} style={{ marginRight: 8 }} />,
+                        }}
+                    />
+                    <TextField
+                        margin="normal"
+                        fullWidth
+                        name="password"
+                        label="Password"
+                        type="password"
+                        id="password"
+                        autoComplete="current-password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        InputProps={{
+                            startAdornment: <KeyIcon size={20} style={{ marginRight: 8 }} />,
+                        }}
+                    />
+                    {error && (
+                        <Alert severity="error" sx={{ mt: 2 }}>
+                            {error}
+                        </Alert>
+                    )}
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2, py: 1.5 }}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? <CircularProgress size={24} /> : 'Connect'}
+                    </Button>
+                </Box>
+            </Paper>
+        </Container>
+    )
 }
