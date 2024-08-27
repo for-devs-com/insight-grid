@@ -93,12 +93,12 @@ const LayoutFlow = (newElements: any) => {
 
     return (
         /*Interactive Canvas*/
-        <div className="flex flex-col h-full w-full bg-gray-900">
+        <div className="flex-1 flex-grow h-screen">
             {/* Node Menu*/}
-            <div className="flex justify-between items-center p-4 bg-gray-800 border-b border-gray-700">
+            <div className="flex  items-center py-2 bg-gray-800 border-b border-gray-700">
                 <button
                     onClick={() => setNodeMenuOpen(true)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                    className="bg-blue-500 text-white mx-2 px-4 py-2 rounded"
                 >
                     Open Node Menu
                 </button>
@@ -115,7 +115,7 @@ const LayoutFlow = (newElements: any) => {
             </div>
 
             {/*Interactive Canvas*/}
-            <div className="flex-grow relative h-full w-full">
+
                 <ReactFlow
                     nodes={nodes}
                     edges={edges}
@@ -137,7 +137,7 @@ const LayoutFlow = (newElements: any) => {
                     <Controls />
                     <Background color="#888" gap={16} />
                 </ReactFlow>
-            </div>
+
         </div>
     );
 };

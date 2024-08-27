@@ -8,15 +8,15 @@ const Navbar: React.FC = () => {
     const { data: session } = useSession();
 
     return (
-        <nav className="bg-blue-600 text-white w-full fixed top-0 left-0 right-0 z-50">
-            <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+        <nav className="bg-blue-600 text-white w-full top-0 left-0 h-16 right-0 z-50 flex-none relative">
+            <div className="container mx-auto px-2 py-3 flex justify-between items-center">
                 <div className="flex items-center">
                     <Link href="/">
                         for-devs.com
                     </Link>
                 </div>
                 <div className="flex items-center">
-                    <Link href="/app/dashboard">
+                    <Link href="src/app/dashboard">
                         Dashboard
                     </Link>
                     {session?.user ? (

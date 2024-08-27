@@ -105,9 +105,9 @@ export default function Workspace({conversationId, visibility, onMessage, onRepl
             newElements,
             onNewNode
         }}>
-            <div className="w-full h-full hidden lg:flex flex-col lg:flex-row ">
-                <Ide className={"flex h-full p-0"}>
-                    <InteractiveCanvas newElements={newElements}/>
+            <div className="flex">
+                <Ide className={"flex-1"}>
+                    <InteractiveCanvas  newElements={newElements}/>
                 </Ide>
             </div>
         </WorkspaceContext.Provider>

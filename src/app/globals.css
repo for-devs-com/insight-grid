@@ -11,7 +11,7 @@
 html, body, #__next {
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    text-color: #f8fafc;
 }
 
 .dialog-background {
@@ -21,4 +21,10 @@ html, body, #__next {
 .dialog-content {
     transition: opacity 0.3s ease-in-out;
     opacity: 1;
+}
+
+input{
+    border: none;
+    outline: none;
+    background: #f3f4f6 ;
 }

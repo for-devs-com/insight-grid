@@ -25,7 +25,7 @@ const DatabaseConnectionNode = ({id}) => {
     },[id, isConnected, setNodeData]);
 
     return (
-        <div style={{padding: 10, border: '1px solid #ccc', borderRadius: 5, background: '#fff'}}>
+        <div style={{padding: 10, border: '1px solid #ccc', borderRadius: 5, background: '#f8fafc'}}>
             {!isConnected ? (
                 <DatabaseConnectionForm onConnectionSuccess={handleConnectionSuccess}/>
             ) : (

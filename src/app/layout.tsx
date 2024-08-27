@@ -11,13 +11,17 @@ const inter = Inter({subsets: ["latin"]});
 export default function RootLayout({children}) {
     return (
         <html lang="en">
-        <body className={`${inter.className} bg-gray-50 text-gray-900`}>
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+            <title>Data Analytics</title>
+        </head>
+        <body className={`${inter.className} bg-gray-50 text-gray-900 w-full`}>
         <Providers>
             {/* Main Layout */}
-            <div className="flex flex-col ">
-                <main className="flex-grow mt-0">
-                    {/* Navbar */}
-                    <Navbar/>
+            <div className="flex-1 h-full " >
+                {/* Navbar */}
+                <Navbar/>
+                <main className="flex-grow">
                     {children}
                 </main>
             </div>
