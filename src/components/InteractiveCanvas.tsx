@@ -15,6 +15,7 @@ import { useShallow } from "zustand/react/shallow";
 import { AppNode, InteractiveCanvasState } from "@/lib/types";
 import '@xyflow/react/dist/style.css';
 import '@xyflow/react/dist/base.css';
+import Dagre from '@dagrejs/dagre';
 
 // Selector for the store
 const selector = (state: InteractiveCanvasState) => ({
@@ -30,6 +31,36 @@ const selector = (state: InteractiveCanvasState) => ({
     isConnected: state.isConnected,
     setIsConnected: state.setIsConnected,
 });
+
+// Layout function
+const getLayoutedElements = (nodes, edges, options) => {
+    const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
+    g.setGraph({ rankdir: options.direction });
+
+    edges.forEach((edge) => g.setEdge(edge.source, edge.target));
+    nodes.forEach((node) =>
+        g.setNode(node.id, {
+            ...node,
+            width: node.measured?.width ?? 0,
+            height: node.measured?.height ?? 0,
+        }),
+    );
+
+    Dagre.layout(g);
+
+    return {
+        nodes: nodes.map((node) => {
+            const position = g.node(node.id);
+            // We are shifting the dagre node position (anchor=center center) to the top left
+            // so it matches the React Flow node anchor point (top left).
+            const x = position.x - (node.measured?.width ?? 0) / 2;
+            const y = position.y - (node.measured?.height ?? 0) / 2;
+
+            return { ...node, position: { x, y } };
+        }),
+        edges,
+    };
+};
 
 // LayoutFlow component
 const LayoutFlow = (newElements: any) => {
@@ -82,14 +113,29 @@ const LayoutFlow = (newElements: any) => {
     }
 
     // Layout the nodes randomly
-    const onLayout = useCallback(() => {
+    /*const onLayout = useCallback(() => {
         const layoutNodes = nodes.map((node) => ({
             ...node,
             position: { x: Math.random() * 250, y: Math.random() * 250 },
         }));
         setNodes(layoutNodes);
         fitView();
-    }, [nodes, fitView, setNodes]);
+    }, [nodes, fitView, setNodes]);*/
+
+    const onLayout = useCallback(
+        (direction) => {
+            console.log(nodes);
+            const layouted = getLayoutedElements(nodes, edges, { direction });
+
+            setNodes([...layouted.nodes]);
+            setEdges([...layouted.edges]);
+
+            window.requestAnimationFrame(() => {
+                fitView();
+            });
+        },
+        [nodes, edges],
+    );
 
     return (
         /*Interactive Canvas*/
@@ -107,10 +153,16 @@ const LayoutFlow = (newElements: any) => {
                     onClose={() => setNodeMenuOpen(false)}
                 />
                 <button
-                    onClick={onLayout}
+                    onClick={() => onLayout('TB')}
                     className="bg-blue-500 text-white px-4 py-2 rounded"
                 >
-                    Reorganize Nodes
+                    Vertical Layout
+                </button>
+                <button
+                    onClick={() => onLayout('LR')}
+                    className="bg-blue-500 text-white px-4 py-2 rounded mx-2"
+                >
+                    Horizontal Layout
                 </button>
             </div>
 
