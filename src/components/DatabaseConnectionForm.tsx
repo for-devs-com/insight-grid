@@ -5,16 +5,16 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }) {
     const router = useRouter();
 
     useEffect(() => {
-        if (!router.isReady) return;
+        if (!router) return;
         console.log('Database Connection Form mounted');
-    }, [router.isReady]);
+    }, [router]);
 
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
     const [error, setError] = useState(null);
-    const [databaseManager, setDatabaseManager] = useState('postgresql');
+    const [databaseType, setDatabaseType] = useState('postgresql');
     const [host, setHost] = useState('localhost');
-    const [port, setPort] = useState(5432);
+    const [port, setPort] = useState('5432');
     const [databaseName, setDatabaseName] = useState('for-devs-university');
     const [userName, setUserName] = useState('postgres');
     const [password, setPassword] = useState('qwerty');
@@ -22,15 +22,15 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }) {
     const handleSubmit = async (event) => {
         event.preventDefault();
         const connectionData = {
-            databaseManager,
+            databaseType: databaseType,
             host,
-            port,
+            port: port,
             databaseName,
             userName,
             password
         };
         try {
-            const response = await fetch(`${apiUrl}/api/connect-database`, {
+            const response = await fetch(`${apiUrl}/api/database/connect`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -49,10 +49,11 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }) {
         }
     };
 
+
     return (
         <div className="container mx-auto max-w-xs p-4">
             <div className="mt-8 flex flex-col items-center">
-                <h1 className="text-2xl font-bold">Database Connection Form</h1>
+                <h1 className=" font-bold">Database Connection Form</h1>
                 <form className="w-full mt-4" noValidate onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label htmlFor="databaseManager" className="block text-gray-700">Database Manager</label>
@@ -60,8 +61,8 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }) {
                             type="text"
                             id="databaseManager"
                             name="databaseManager"
-                            value={databaseManager}
-                            onChange={(e) => setDatabaseManager(e.target.value)}
+                            value={databaseType}
+                            onChange={(e) => setDatabaseType(e.target.value)}
                             className="w-full px-4 py-2 border rounded-md"
                             autoFocus
                         />
