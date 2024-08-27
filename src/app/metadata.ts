@@ -1,4 +1,4 @@
 export const metadata = {
-    title: "Insight Grid",
+    title: "Data Analytics",
     description: "Intelligent data insights for your business",
 };
