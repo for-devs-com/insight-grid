@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useSession, signIn } from 'next-auth/react'
 import {
     Box,
@@ -24,6 +24,7 @@ import { ArrowForward, Security, Psychology, Group, SettingsApplications, Email,
 import DynamicTables from '@/components/DynamicTables'
 import DatabaseConnectionForm from '@/components/DatabaseConnectionForm'
 import Navbar from '@/components/Navbar'
+import { useSearchParams } from 'next/navigation'
 
 const ReactPlayer = dynamic(() => import('react-player/youtube'), { ssr: false })
 
@@ -33,6 +34,14 @@ export default function Component() {
     const homeRef = useRef<HTMLDivElement>(null)
     const aboutRef = useRef<HTMLDivElement>(null)
     const contactsRef = useRef<HTMLDivElement>(null)
+    const searchParams = useSearchParams()
+
+    useEffect(() => {
+        const section = searchParams.get('section')
+        if (section) {
+            scrollToSection(section)
+        }
+    }, [searchParams])
 
     const theme = createTheme({
         palette: {
@@ -119,7 +128,21 @@ export default function Component() {
         marginBottom: theme.spacing(3),
     }))
 
-    const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
+    const scrollToSection = (section: string) => {
+        let ref
+        switch (section) {
+            case 'home':
+                ref = homeRef
+                break
+            case 'about':
+                ref = aboutRef
+                break
+            case 'contact':
+                ref = contactsRef
+                break
+            default:
+                return
+        }
         ref.current?.scrollIntoView({ behavior: 'smooth' })
     }
 
@@ -372,9 +395,9 @@ export default function Component() {
                                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                                     Quick Links
                                 </Typography>
-                                <Link component="button" onClick={() => scrollToSection(homeRef)} color="inherit" sx={{ display: 'block', mb: 1 }}>Home</Link>
-                                <Link component="button" onClick={() => scrollToSection(aboutRef)} color="inherit" sx={{ display: 'block', mb: 1 }}>About Us</Link>
-                                <Link component="button" onClick={() => scrollToSection(contactsRef)} color="inherit" sx={{ display: 'block', mb: 1 }}>Contact Us</Link>
+                                <Link component="button" onClick={() => scrollToSection('home')} color="inherit" sx={{ display: 'block', mb: 1 }}>Home</Link>
+                                <Link component="button" onClick={() => scrollToSection('about')} color="inherit" sx={{ display: 'block', mb: 1 }}>About Us</Link>
+                                <Link component="button" onClick={() => scrollToSection('contact')} color="inherit" sx={{ display: 'block', mb: 1 }}>Contact Us</Link>
                                 <Link href="/privacy" color="inherit" sx={{ display: 'block' }}>Privacy Policy</Link>
                             </Grid>
                             <Grid item xs={12} md={4}>

@@ -16,7 +16,7 @@ import {
 import { DatabaseIcon, ServerIcon, UserIcon, KeyIcon } from 'lucide-react'
 
 const databaseManagers = [
-    { value: 'postgresql', label: 'PostgreSQL' },
+    { value: 'postgresql', label: 'Postgres' },
     { value: 'mysql', label: 'MySQL' },
     { value: 'sqlserver', label: 'SQL Server' },
 ]
@@ -26,11 +26,11 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }) {
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState(null)
     const [formData, setFormData] = useState({
-        databaseManager: 'postgresql',
+        databaseType: 'postgresql',
         host: 'localhost',
         port: 5432,
         databaseName: 'for-devs-university',
-        user: 'postgres',
+        userName: 'postgres',
         password: '',
     })
 
@@ -53,7 +53,7 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }) {
         setError(null)
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/connect-database`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/database/connect`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -86,10 +86,10 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }) {
                         select
                         margin="normal"
                         fullWidth
-                        id="databaseManager"
+                        id="databaseType"
                         label="Database Manager"
                         name="databaseManager"
-                        value={formData.databaseManager}
+                        value={formData.databaseType}
                         onChange={handleChange}
                         InputProps={{
                             startAdornment: <DatabaseIcon size={20} style={{ marginRight: 8 }} />,
@@ -135,10 +135,10 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }) {
                     <TextField
                         margin="normal"
                         fullWidth
-                        id="user"
+                        id="userName"
                         label="User"
                         name="user"
-                        value={formData.user}
+                        value={formData.userName}
                         onChange={handleChange}
                         InputProps={{
                             startAdornment: <UserIcon size={20} style={{ marginRight: 8 }} />,

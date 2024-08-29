@@ -30,7 +30,7 @@ export default function DynamicTables() {
         const fetchTables = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`${apiUrl}/api/listTables`);
+                const response = await axios.get(`${apiUrl}/api/database/list/tables`);
                 setTables(response.data || []);
                 console.log('Tables:', response.data);
             } catch (error) {
@@ -54,7 +54,7 @@ export default function DynamicTables() {
 
             for (const table of selectedTables) {
                 try {
-                    const response = await axios.get(`${apiUrl}/api/data/${table}?page=${newPage}&size=10`);
+                    const response = await axios.get(`${apiUrl}/api/database/${table}?page=${newPage}&size=10`);
                     if (response.data) {
                         newTableData[table] = {
                             columns: response.data.columns,
