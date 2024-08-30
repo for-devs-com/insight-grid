@@ -1,8 +1,11 @@
 {
   "compilerOptions": {
+    "target": "esnext",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": [
+        "src/*"
+      ]
     },
     "lib": [
       "dom",
@@ -16,6 +19,8 @@
     "incremental": true,
     "module": "esnext",
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -33,9 +38,9 @@
     "**/*.tsx",
     "src",
     "src/**/*"
-
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    ".next"
   ]
 }
