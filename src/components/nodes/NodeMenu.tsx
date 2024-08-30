@@ -9,11 +9,11 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { nodeTypes } from '@/components/InteractiveCanvas.constants';
-import useStore from "@/store/useStore";
+import useCanvasStore from "@/store/useCanvasStore";
 
 
 export default function NodeMenu({ open, onClose}) {
-    const addNode = useStore((state) => state.addNode);
+    const addNode = useCanvasStore((state) => state.addNode);
 
     const handleAddNode = (type) => {
         const position = { x: Math.random() * 250, y: Math.random() * 250 };

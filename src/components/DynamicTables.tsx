@@ -1,5 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import axios from 'axios';
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue
+} from "@/components/ui/select";
 
 export default function DynamicTables() {
     const [tables, setTables] = useState([]);
@@ -12,7 +21,7 @@ export default function DynamicTables() {
         const fetchTables = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`${apiUrl}/api/listTables`);
+                const response = await axios.get(`${apiUrl}/api/database/listTables`);
                 setTables(response.data || []);
                 console.log('Tables:', response.data);
             } catch (error) {
@@ -29,11 +38,12 @@ export default function DynamicTables() {
         if (!selectedTables.length) return;
 
         setLoading(true);
-        const newTableData = { ...selectedTables };
+        const newTableData = {...selectedTables};
 
         for (const table of selectedTables) {
             try {
-                const response = await axios.get(`${apiUrl}/api/data/${table}?page=${newPage}&size=10`);
+                // TODO: fix page size and total rows
+                const response = await axios.get(`${apiUrl}/api/database/data/${table}?page=${newPage}&size=10`);
                 if (response.data) {
                     newTableData[table] = {
                         columns: response.data.columns,
@@ -53,16 +63,18 @@ export default function DynamicTables() {
     }, [selectedTables, apiUrl]);
 
     useEffect(() => {
-        fetchAllTableData();
+        if (selectedTables.length) {
+            fetchAllTableData();
+        }
     }, [fetchAllTableData]);
 
-    const handleSelectTable = (event) => {
-        setSelectedTables(Array.from(event.target.selectedOptions, option => option.value));
+    const handleSelectTable = (value: string) => {
+        setSelectedTables([value]);
     };
 
     const handleChangePage = async (_event, tableName, newPage) => {
         setLoading(true);
-        await fetchAllTableData(newPage, tableName);
+        await fetchAllTableData(newPage);
         setLoading(false);
     };
 
@@ -73,18 +85,21 @@ export default function DynamicTables() {
     return (
         <div className="container mx-auto p-4">
             <div className="mb-4">
-                <label htmlFor="table-select" className="block text-gray-700">Tablas</label>
-                <select
-                    id="table-select"
-                    multiple
-                    value={selectedTables}
-                    onChange={handleSelectTable}
-                    className="block w-full px-3 py-2 border border-gray-300 rounded-md"
-                >
-                    {tables.map((table) => (
-                        <option key={table} value={table}>{table}</option>
-                    ))}
-                </select>
+                <label htmlFor="table-select" className="block text-gray-800">Tablas</label>
+                <Select onValueChange={handleSelectTable}>
+                    <SelectTrigger className="w-full bg-gray-200 px-3 py-2 border border-gray-300 rounded-md">
+                        <SelectValue className={"text-black"} placeholder={selectedTables.length ? selectedTables! : "Selecciona una tabla"}/>
+
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectGroup>
+                            <SelectLabel>Tablas</SelectLabel>
+                            {tables.map((table) => (
+                                <SelectItem key={table} value={table}>{table}</SelectItem>
+                            ))}
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
             </div>
 
             {selectedTables.map((tableName) => (
@@ -105,7 +120,8 @@ export default function DynamicTables() {
                                 {selectedTableData[tableName].rows.map((row, rowIndex) => (
                                     <tr key={`row-${row.id}`}>
                                         {selectedTableData[tableName].columns.map((column) => (
-                                            <td key={`cell-${column.COLUMN_NAME}-${rowIndex}`} className="px-4 py-2 border-b border-gray-200">
+                                            <td key={`cell-${column.COLUMN_NAME}-${rowIndex}`}
+                                                className="px-4 py-2 border-b border-gray-200">
                                                 {row[column.COLUMN_NAME]}
                                             </td>
                                         ))}
@@ -113,7 +129,8 @@ export default function DynamicTables() {
                                 ))}
                                 {selectedTableData[tableName].rows.length === 0 && (
                                     <tr>
-                                        <td colSpan={selectedTableData[tableName].columns.length} className="px-4 py-2 text-center">
+                                        <td colSpan={selectedTableData[tableName].columns.length}
+                                            className="px-4 py-2 text-center">
                                             No data
                                         </td>
                                     </tr>
