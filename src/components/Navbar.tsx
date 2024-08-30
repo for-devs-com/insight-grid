@@ -1,43 +1,44 @@
-"use client";
+'use client';
 
 import React from 'react';
-import {AppBar, Toolbar, Typography, Button, Avatar, Link} from '@mui/material';
-import {useSession, signIn, signOut} from 'next-auth/react';
+import { useSession, signIn, signOut } from 'next-auth/react';
+import Link from 'next/link';
 
 const Navbar: React.FC = () => {
-    const {data: session} = useSession();
+    const { data: session } = useSession();
 
     return (
-        <div>
-            <AppBar position="static" sx={{width: '100%'}}>
-                <Toolbar>
-                    <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
-                        <Link href="/" color="inherit" underline="none">
-                            for-devs.com
-                        </Link>
-                    </Typography>
-                    <Link href={"../dashboard"} color="inherit" underline="none" sx={{marginRight: 2}}>
+        <nav className="bg-blue-900 text-white w-full top-0 left-0 h-16 right-0 z-50 flex-none relative">
+            <div className="container mx-auto px-2 py-3 flex justify-between items-center">
+                <div className="flex items-center">
+                    <Link href="/">
+                        for-devs.com
+                    </Link>
+                </div>
+                <div className="flex items-center">
+                    <Link href="/app/dashboard">
                         Dashboard
                     </Link>
                     {session?.user ? (
-                        <div style={{display: 'flex', alignItems: 'center'}}>
-                            <Avatar alt={session.user.name || session.user.email || 'User'}
-                                    src={session.user.image || undefined} sx={{marginRight: 2}}/>
-                            <Typography variant="body1" sx={{marginRight: 2}}>
-                                {session.user.name || session.user.email}
-                            </Typography>
-                            <Button color="inherit" onClick={() => signOut()}>
+                        <div className="flex items-center">
+                            <img
+                                className="w-8 h-8 rounded-full mr-2"
+                                src={session.user.image || undefined}
+                                alt={session.user.name || session.user.email || 'User'}
+                            />
+                            <span className="mr-4">{session.user.name || session.user.email}</span>
+                            <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={() => signOut()}>
                                 Logout
-                            </Button>
+                            </button>
                         </div>
                     ) : (
-                        <Button color="inherit" onClick={() => signIn()}>
+                        <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onClick={() => signIn()}>
                             Sign In
-                        </Button>
+                        </button>
                     )}
-                </Toolbar>
-            </AppBar>
-        </div>
+                </div>
+            </div>
+        </nav>
     );
 };
 
