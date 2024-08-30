@@ -16,7 +16,7 @@ const Navbar: React.FC = () => {
                     </Link>
                 </div>
                 <div className="flex items-center">
-                    <Link href="./dashboard">
+                    <Link href="/app/dashboard">
                         Dashboard
                     </Link>
                     {session?.user ? (
