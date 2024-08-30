@@ -29,7 +29,7 @@ const useCanvasStore = create<InteractiveCanvasState>()(
 					setNodes: (nodes) => {
 						set({nodes});
 					},
-					setEdges: (edges) => {
+					setEdges: (edges: Edge[]) => {
 						set({edges});
 					},
 					addNode: (node) => {
