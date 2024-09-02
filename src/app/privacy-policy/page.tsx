@@ -13,6 +13,9 @@ import {
     Divider,
     useTheme,
     Button,
+    ThemeProvider,
+    createTheme,
+    CssBaseline,
 } from '@mui/material'
 import {
     Security,
@@ -27,8 +30,28 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 const PrivacyPolicy = () => {
-    const theme = useTheme()
     const router = useRouter()
+
+    const theme = createTheme({
+        palette: {
+            mode: 'light',
+            primary: {
+                main: '#0f2b46',
+            },
+            secondary: {
+                main: '#f50057',
+            },
+        },
+        typography: {
+            fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
+            h1: {
+                fontWeight: 700,
+            },
+            h2: {
+                fontWeight: 600,
+            },
+        },
+    })
 
     const sections = [
         {
@@ -63,67 +86,70 @@ const PrivacyPolicy = () => {
     }
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-            <Navbar />
-            <Container component="main" maxWidth="md" sx={{ mt: 12, mb: 8 }}>
-                <Button
-                    startIcon={<ArrowBack />}
-                    onClick={() => handleNavigation('home')}
-                    sx={{ mb: 2 }}
-                >
-                    Back to Home
-                </Button>
-                <Paper elevation={3} sx={{ p: 4, borderRadius: 2, bgcolor: 'background.paper' }}>
-                    <Typography variant="h3" component="h1" gutterBottom sx={{ color: 'primary.main', fontWeight: 700 }}>
-                        Privacy Policy
-                    </Typography>
-                    <Typography variant="body1" paragraph>
-                        DataAnalytic is committed to protecting your privacy and ensuring the security of your personal information. This policy outlines how we collect, use, and safeguard your data when you use our website and services.
-                    </Typography>
-                    <List>
-                        {sections.map((section, index) => (
-                            <React.Fragment key={index}>
-                                <ListItem alignItems="flex-start" sx={{ py: 3 }}>
-                                    <ListItemIcon sx={{ mt: 1 }}>{section.icon}</ListItemIcon>
-                                    <ListItemText
-                                        primary={
-                                            <Typography variant="h6" component="h2" sx={{ color: 'primary.main', mb: 1 }}>
-                                                {section.title}
-                                            </Typography>
-                                        }
-                                        secondary={
-                                            <Typography variant="body2" color="text.secondary">
-                                                {section.content}
-                                            </Typography>
-                                        }
-                                    />
-                                </ListItem>
-                                {index < sections.length - 1 && <Divider variant="inset" component="li" />}
-                            </React.Fragment>
-                        ))}
-                    </List>
-                    <Typography variant="body2" sx={{ mt: 4, fontStyle: 'italic' }}>
-                        DataAnalytic reserves the right to update this Privacy Policy. We encourage you to review this page periodically for any changes.
-                    </Typography>
-                    <Box sx={{ mt: 4 }}>
-                        <Typography variant="body1">
-                            If you have any questions about this Privacy Policy, please{' '}
-                            <Link href="#" onClick={() => handleNavigation('contact')} style={{ color: theme.palette.primary.main }}>
-                                contact us
-                            </Link>
-                            .
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+                <Navbar />
+                <Container component="main" maxWidth="md" sx={{ mt: 12, mb: 8 }}>
+                    <Button
+                        startIcon={<ArrowBack />}
+                        onClick={() => handleNavigation('home')}
+                        sx={{ mb: 2 }}
+                    >
+                        Back to Home
+                    </Button>
+                    <Paper elevation={3} sx={{ p: 4, borderRadius: 2, bgcolor: 'background.paper' }}>
+                        <Typography variant="h3" component="h1" gutterBottom sx={{ color: 'primary.main', fontWeight: 700 }}>
+                            Privacy Policy
                         </Typography>
-                    </Box>
-                </Paper>
-            </Container>
-            <Box component="footer" sx={{ py: 3, px: 2, mt: 'auto', bgcolor: 'primary.main' }}>
-                <Container maxWidth="sm">
-                    <Typography variant="body2" align="center" color="white">
-                        © {new Date().getFullYear()} DataAnalytic. All rights reserved.
-                    </Typography>
+                        <Typography variant="body1" paragraph>
+                            DataAnalytic is committed to protecting your privacy and ensuring the security of your personal information. This policy outlines how we collect, use, and safeguard your data when you use our website and services.
+                        </Typography>
+                        <List>
+                            {sections.map((section, index) => (
+                                <React.Fragment key={index}>
+                                    <ListItem alignItems="flex-start" sx={{ py: 3 }}>
+                                        <ListItemIcon sx={{ mt: 1 }}>{section.icon}</ListItemIcon>
+                                        <ListItemText
+                                            primary={
+                                                <Typography variant="h6" component="h2" sx={{ color: 'primary.main', mb: 1 }}>
+                                                    {section.title}
+                                                </Typography>
+                                            }
+                                            secondary={
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {section.content}
+                                                </Typography>
+                                            }
+                                        />
+                                    </ListItem>
+                                    {index < sections.length - 1 && <Divider variant="inset" component="li" />}
+                                </React.Fragment>
+                            ))}
+                        </List>
+                        <Typography variant="body2" sx={{ mt: 4, fontStyle: 'italic' }}>
+                            DataAnalytic reserves the right to update this Privacy Policy. We encourage you to review this page periodically for any changes.
+                        </Typography>
+                        <Box sx={{ mt: 4 }}>
+                            <Typography variant="body1">
+                                If you have any questions about this Privacy Policy, please{' '}
+                                <Link href="#" onClick={() => handleNavigation('contact')} style={{ color: theme.palette.primary.main }}>
+                                    contact us
+                                </Link>
+                                .
+                            </Typography>
+                        </Box>
+                    </Paper>
                 </Container>
+                <Box component="footer" sx={{ py: 3, px: 2, mt: 'auto', bgcolor: 'primary.main' }}>
+                    <Container maxWidth="sm">
+                        <Typography variant="body2" align="center" color="white">
+                            © {new Date().getFullYear()} DataAnalytic. All rights reserved.
+                        </Typography>
+                    </Container>
+                </Box>
             </Box>
-        </Box>
+        </ThemeProvider>
     )
 }
 

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import {
@@ -25,15 +25,14 @@ import {
 import { Menu as MenuIcon } from '@mui/icons-material'
 
 interface NavbarProps {
-    homeRef: React.RefObject<HTMLDivElement>
-    aboutRef: React.RefObject<HTMLDivElement>
-    contactRef: React.RefObject<HTMLDivElement>
+    navigateToSection: (section: string) => void
 }
 
-export default function Component({ homeRef, aboutRef, contactRef }: NavbarProps) {
+export default function Navbar({ navigateToSection }: NavbarProps) {
     const [drawerOpen, setDrawerOpen] = useState(false)
     const { data: session } = useSession()
     const router = useRouter()
+    const pathname = usePathname()
 
     const theme = createTheme({
         palette: {
@@ -81,18 +80,11 @@ export default function Component({ homeRef, aboutRef, contactRef }: NavbarProps
 
     const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
-    const scrollToRef = (ref: React.RefObject<HTMLDivElement>) => {
-        ref.current?.scrollIntoView({ behavior: 'smooth' })
-        if (isMobile) {
-            setDrawerOpen(false)
-        }
-    }
-
-    const navigateTo = (path: string, ref?: React.RefObject<HTMLDivElement>) => {
-        if (ref) {
-            scrollToRef(ref)
+    const handleNavigation = (section: string) => {
+        if (pathname === '/') {
+            navigateToSection(section)
         } else {
-            router.push(path)
+            router.push(`/?section=${section}`)
         }
         if (isMobile) {
             setDrawerOpen(false)
@@ -104,9 +96,9 @@ export default function Component({ homeRef, aboutRef, contactRef }: NavbarProps
     }
 
     const menuItems = [
-        { label: 'Home', path: '/', ref: homeRef },
-        { label: 'About Us', path: '/about', ref: aboutRef },
-        { label: 'Contact Us', path: '/contact', ref: contactRef },
+        { label: 'Home', section: 'home' },
+        { label: 'About Us', section: 'about' },
+        { label: 'Contact Us', section: 'contact' },
         { label: 'Privacy Policy', path: '/privacy-policy' },
     ]
 
@@ -116,7 +108,7 @@ export default function Component({ homeRef, aboutRef, contactRef }: NavbarProps
                 <Button
                     key={index}
                     color="inherit"
-                    onClick={() => navigateTo(item.path, item.ref)}
+                    onClick={() => item.path ? router.push(item.path) : handleNavigation(item.section)}
                     sx={{ mx: 1 }}
                 >
                     {item.label}
@@ -150,7 +142,7 @@ export default function Component({ homeRef, aboutRef, contactRef }: NavbarProps
                 <ListItem
                     button
                     key={index}
-                    onClick={() => navigateTo(item.path, item.ref)}
+                    onClick={() => item.path ? router.push(item.path) : handleNavigation(item.section)}
                 >
                     <ListItemText primary={item.label} />
                 </ListItem>

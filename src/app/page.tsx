@@ -165,7 +165,7 @@ export default function Component() {
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-                <Navbar homeRef={homeRef} aboutRef={aboutRef} contactRef={contactsRef} />
+                <Navbar navigateToSection={scrollToSection} />
                 <Box component="main" sx={{ flexGrow: 1 }}>
                     {!session ? (
                         <>
@@ -392,13 +392,15 @@ export default function Component() {
                                 </Typography>
                             </Grid>
                             <Grid item xs={12} md={4}>
-                                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                                <Typography variant="h6" gut
+
+                                            terBottom sx={{ fontWeight: 600 }}>
                                     Quick Links
                                 </Typography>
                                 <Link component="button" onClick={() => scrollToSection('home')} color="inherit" sx={{ display: 'block', mb: 1 }}>Home</Link>
                                 <Link component="button" onClick={() => scrollToSection('about')} color="inherit" sx={{ display: 'block', mb: 1 }}>About Us</Link>
                                 <Link component="button" onClick={() => scrollToSection('contact')} color="inherit" sx={{ display: 'block', mb: 1 }}>Contact Us</Link>
-                                <Link href="/privacy" color="inherit" sx={{ display: 'block' }}>Privacy Policy</Link>
+                                <Link href="/privacy-policy" color="inherit" sx={{ display: 'block' }}>Privacy Policy</Link>
                             </Grid>
                             <Grid item xs={12} md={4}>
                                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
