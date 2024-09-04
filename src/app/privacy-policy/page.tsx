@@ -11,7 +11,6 @@ import {
     ListItemIcon,
     ListItemText,
     Divider,
-    useTheme,
     Button,
     ThemeProvider,
     createTheme,
@@ -41,14 +40,30 @@ const PrivacyPolicy = () => {
             secondary: {
                 main: '#f50057',
             },
+            background: {
+                default: '#ffffff',
+                paper: '#ffffff',
+            },
+            text: {
+                primary: '#0f2b46',
+                secondary: '#0f2b46',
+            },
         },
         typography: {
             fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
             h1: {
                 fontWeight: 700,
+                color: '#0f2b46',
             },
             h2: {
                 fontWeight: 600,
+                color: '#0f2b46',
+            },
+            body1: {
+                color: '#0f2b46',
+            },
+            body2: {
+                color: '#0f2b46',
             },
         },
     })
@@ -88,13 +103,13 @@ const PrivacyPolicy = () => {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: 'background.default' }}>
                 <Navbar />
                 <Container component="main" maxWidth="md" sx={{ mt: 12, mb: 8 }}>
                     <Button
                         startIcon={<ArrowBack />}
                         onClick={() => handleNavigation('home')}
-                        sx={{ mb: 2 }}
+                        sx={{ mb: 2, color: 'primary.main' }}
                     >
                         Back to Home
                     </Button>
@@ -109,7 +124,7 @@ const PrivacyPolicy = () => {
                             {sections.map((section, index) => (
                                 <React.Fragment key={index}>
                                     <ListItem alignItems="flex-start" sx={{ py: 3 }}>
-                                        <ListItemIcon sx={{ mt: 1 }}>{section.icon}</ListItemIcon>
+                                        <ListItemIcon sx={{ mt: 1, color: 'primary.main' }}>{section.icon}</ListItemIcon>
                                         <ListItemText
                                             primary={
                                                 <Typography variant="h6" component="h2" sx={{ color: 'primary.main', mb: 1 }}>
