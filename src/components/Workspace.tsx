@@ -1,14 +1,14 @@
 'use client';
 
 
-
-import {useChat, UseChatHelpers, CreateMessage, Message} from 'ai/react';
-import {createContext, useCallback, useContext, useState} from "react";
+import {CreateMessage, Message, useChat, UseChatHelpers} from 'ai/react';
+import React, {createContext, useCallback, useContext, useEffect} from "react";
 import {ensureMessageId, ensureToolResult} from "@/lib/utils/util";
-import {useMessageCreateMutation} from "@/data/chat/message-create-mutation";
 import Ide from "@/components/ide";
-import Chat from "@/components/chat/Chat";
 import InteractiveCanvas from "@/components/InteractiveCanvas";
+import useCanvasStore from "@/store/useCanvasStore";
+import {useSession} from "next-auth/react";
+import Sidebar from "@/components/Sidebar";
 
 // TODO: support public/private DBs that live in the cloud
 export type Visibility = 'local' | 'public' | 'private'
@@ -56,11 +56,80 @@ export type WorkspaceProps = {
     onNewNode: (node: any) => void;
 }
 
-export default function Workspace({conversationId, visibility, onMessage, onReply, onCancelReply, newElements, onNewNode}: WorkspaceProps) {
+export default function Workspace({
+                                      conversationId,
+                                      visibility,
+                                      onMessage,
+                                      onReply,
+                                      onCancelReply,
+                                      newElements,
+                                      onNewNode
+                                  }: WorkspaceProps) {
 
     /*const {data: existingMessages, isLoading: isLoadingMessages} = useMessagesQuery(conversationId)
     const {data: tables, isLoading: isLoadingSchema} = useTablesQuery({conversationId: conversationId});*/
     /*const {mutateAsync: saveMessage} = useMessageCreateMutation(conversationId)*/
+    const {setNodes, setEdges, setIsConnected, nodes, edges, isConnected } = useCanvasStore();
+    const {data: session} = useSession();
+    const userId = session?.user?.id as string;
+
+    const fetchAppState = async (userId: string) => {
+        try {
+            const response = await fetch(`/api/state/${userId}`);
+            if (response.ok) {
+                return await response.json();
+            } else {
+                console.error('Failed to fetch app state:', await response.json());
+            }
+        } catch (error) {
+            console.error('Error fetching app state:', error);
+        }
+    };
+
+    const saveAppState = async (userId: string, canvasState: any) => {
+        try {
+            const response = await fetch('/api/state', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId, canvasState }),
+            });
+
+            if (!response.ok) {
+                console.error('Failed to save app state:', await response.json());
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Error saving app state:', error);
+        }
+    };
+
+    useEffect(() => {
+        const loadCanvasState = async () => {
+            if (userId) {
+                const appState = await fetchAppState(userId);
+                if (appState) {
+                    setNodes(appState.nodes);
+                    setEdges(appState.edges);
+                    setIsConnected(appState.isConnected);
+                }
+            }
+        };
+
+        loadCanvasState();
+    }, [userId, setNodes, setEdges, setIsConnected]);
+
+    // Guardar el estado automáticamente en cada cambio de nodos o aristas
+    useEffect(() => {
+        if (userId) {
+            const currentState = { nodes, edges, isConnected };
+            saveAppState(userId, currentState);
+        }
+    }, [userId, nodes, edges, isConnected]);
+
+
 
 
     const {messages, setMessages, append, stop} = useChat({
@@ -105,9 +174,11 @@ export default function Workspace({conversationId, visibility, onMessage, onRepl
             newElements,
             onNewNode
         }}>
-            <div className="flex">
+            <div className="flex flex-grow">
+                <Sidebar/>
                 <Ide className={"flex-1"}>
-                    <InteractiveCanvas  newElements={newElements}/>
+
+                    <InteractiveCanvas newElements={newElements}/>
                 </Ide>
             </div>
         </WorkspaceContext.Provider>
