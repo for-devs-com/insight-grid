@@ -24,7 +24,7 @@ import { ArrowForward, Security, Psychology, Group, SettingsApplications, Email,
 import DynamicTables from '@/components/DynamicTables'
 import DatabaseConnectionForm from '@/components/DatabaseConnectionForm'
 import Navbar from '@/components/Navbar'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 
 const ReactPlayer = dynamic(() => import('react-player/youtube'), { ssr: false })
 
@@ -35,13 +35,7 @@ export default function Component() {
     const aboutRef = useRef<HTMLDivElement>(null)
     const contactsRef = useRef<HTMLDivElement>(null)
     const searchParams = useSearchParams()
-
-    useEffect(() => {
-        const section = searchParams.get('section')
-        if (section) {
-            scrollToSection(section)
-        }
-    }, [searchParams])
+    const router = useRouter()
 
     const theme = createTheme({
         palette: {
@@ -143,8 +137,21 @@ export default function Component() {
             default:
                 return
         }
-        ref.current?.scrollIntoView({ behavior: 'smooth' })
+        ref?.current?.scrollIntoView({ behavior: 'smooth' })
     }
+
+    useEffect(() => {
+        const section = searchParams.get('section')
+        if (section) {
+            if (session) {
+                // Handle navigation for authenticated state
+                console.log(`Navigating to ${section} in authenticated state`)
+                // Implement your logic here for authenticated state navigation
+            } else {
+                scrollToSection(section)
+            }
+        }
+    }, [searchParams, session])
 
     const handleConnectionSuccess = () => {
         setIsConnected(true)
@@ -392,9 +399,7 @@ export default function Component() {
                                 </Typography>
                             </Grid>
                             <Grid item xs={12} md={4}>
-                                <Typography variant="h6" gut
-
-                                            terBottom sx={{ fontWeight: 600 }}>
+                                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                                     Quick Links
                                 </Typography>
                                 <Link component="button" onClick={() => scrollToSection('home')} color="inherit" sx={{ display: 'block', mb: 1 }}>Home</Link>

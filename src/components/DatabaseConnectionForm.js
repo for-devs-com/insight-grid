@@ -1,7 +1,6 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import React, { useState } from 'react';
 import {
     Container,
     Box,
@@ -12,19 +11,18 @@ import {
     Paper,
     Alert,
     CircularProgress,
-} from "@mui/material"
-import { DatabaseIcon, ServerIcon, UserIcon, KeyIcon } from 'lucide-react'
+} from '@mui/material';
+import { DatabaseIcon, ServerIcon, UserIcon, KeyIcon } from 'lucide-react';
 
 const databaseManagers = [
     { value: 'postgresql', label: 'Postgres' },
     { value: 'mysql', label: 'MySQL' },
     { value: 'sqlserver', label: 'SQL Server' },
-]
+];
 
 export default function DatabaseConnectionForm({ onConnectionSuccess }) {
-    const router = useRouter()
-    const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState(null)
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
     const [formData, setFormData] = useState({
         databaseType: 'postgresql',
         host: 'localhost',
@@ -32,46 +30,40 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }) {
         databaseName: 'for-devs-university',
         userName: 'postgres',
         password: '',
-    })
-
-    useEffect(() => {
-        if (!router.isReady) return
-        console.log('Database Connection Form mounted')
-    }, [router.isReady])
+    });
 
     const handleChange = (event) => {
-        const { name, value } = event.target
+        const { name, value } = event.target;
         setFormData(prevData => ({
             ...prevData,
-            [name]: value
-        }))
-    }
+            [name]: value,
+        }));
+    };
 
     const handleSubmit = async (event) => {
-        event.preventDefault()
-        setIsLoading(true)
-        setError(null)
+        event.preventDefault();
+        setIsLoading(true);
+        setError(null);
 
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/database/connect`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData)
-            })
+                body: JSON.stringify(formData),
+            });
 
             if (response.ok) {
-                onConnectionSuccess()
+                onConnectionSuccess();
             } else {
-                const errorMsg = await response.text()
-                setError(`Connection failed: ${errorMsg}`)
+                const errorMsg = await response.text();
+                setError(`Connection failed: ${errorMsg}`);
             }
         } catch (error) {
-            console.error('Error connecting to the database', error)
-            setError('Error connecting to the database')
+            setError('Error connecting to the database');
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
     }
 
@@ -88,7 +80,7 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }) {
                         fullWidth
                         id="databaseType"
                         label="Database Manager"
-                        name="databaseManager"
+                        name="databaseType"
                         value={formData.databaseType}
                         onChange={handleChange}
                         InputProps={{
@@ -137,7 +129,7 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }) {
                         fullWidth
                         id="userName"
                         label="User"
-                        name="user"
+                        name="userName"
                         value={formData.userName}
                         onChange={handleChange}
                         InputProps={{
@@ -175,5 +167,5 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }) {
                 </Box>
             </Paper>
         </Container>
-    )
+    );
 }

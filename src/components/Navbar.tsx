@@ -113,7 +113,13 @@ export default function Navbar({ navigateToSection }) {
     const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
     const handleNavigation = (section, path) => {
-        path ? router.push(path) : pathname === '/' ? navigateToSection(section) : router.push(`/?section=${section}`)
+        if (path) {
+            router.push(path)
+        } else if (pathname === '/') {
+            navigateToSection(section)
+        } else {
+            router.push(`/?section=${section}`)
+        }
         setDrawerOpen(false)
     }
 
