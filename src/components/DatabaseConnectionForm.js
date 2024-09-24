@@ -46,7 +46,7 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }) {
         setError(null);
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/database/connect`, {
+            const response = await fetch(`${process.env.QUERY_BRIDGE_DATABASE_CONNECTION_URL}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
