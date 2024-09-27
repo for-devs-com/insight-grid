@@ -8,7 +8,7 @@ import Ide from "@/components/ide";
 import InteractiveCanvas from "@/components/InteractiveCanvas";
 import useCanvasStore from "@/store/useCanvasStore";
 import {useSession} from "next-auth/react";
-import Sidebar from "@/components/Sidebar";
+import {verifyUserExistsInDb} from "@/lib/utils/stateService";
 
 // TODO: support public/private DBs that live in the cloud
 export type Visibility = 'local' | 'public' | 'private'
@@ -58,7 +58,6 @@ export type WorkspaceProps = {
 
 export default function Workspace({
                                       conversationId,
-                                      visibility,
                                       onMessage,
                                       onReply,
                                       onCancelReply,
@@ -73,61 +72,28 @@ export default function Workspace({
     const {data: session} = useSession();
     const userId = session?.user?.id as string;
 
-    const fetchAppState = async (userId: string) => {
-        try {
-            const response = await fetch(`/api/state/${userId}`);
-            if (response.ok) {
-                return await response.json();
-            } else {
-                console.error('Failed to fetch app state:', await response.json());
-            }
-        } catch (error) {
-            console.error('Error fetching app state:', error);
-        }
-    };
-
-    const saveAppState = async (userId: string, canvasState: any) => {
-        try {
-            const response = await fetch('/api/state', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ userId, canvasState }),
-            });
-
-            if (!response.ok) {
-                console.error('Failed to save app state:', await response.json());
-            }
-
-            return await response.json();
-        } catch (error) {
-            console.error('Error saving app state:', error);
-        }
-    };
 
     useEffect(() => {
-        const loadCanvasState = async () => {
-            if (userId) {
-                const appState = await fetchAppState(userId);
-                if (appState) {
-                    setNodes(appState.nodes);
-                    setEdges(appState.edges);
-                    setIsConnected(appState.isConnected);
+        const verifyAndFetchState = async () => {
+            try {
+                if (!userId) return console.error('No userId found');
+
+                const exists = await verifyUserExistsInDb(userId);
+
+                if (exists) {
+                    console.log('User exists in DB');
+                    // Lógica para cargar el estado del usuario
+                } else {
+                    console.log('User does not exist in DB');
+                    // Lógica para crear un nuevo estado para el usuario
                 }
+            } catch (error) {
+                console.error('Error verifying user in DB:', error);
             }
         };
 
-        loadCanvasState();
-    }, [userId, setNodes, setEdges, setIsConnected]);
-
-    // Guardar el estado automáticamente en cada cambio de nodos o aristas
-    useEffect(() => {
-        if (userId) {
-            const currentState = { nodes, edges, isConnected };
-            saveAppState(userId, currentState);
-        }
-    }, [userId, nodes, edges, isConnected]);
+        verifyAndFetchState();
+    }, [userId]);
 
 
 
@@ -175,7 +141,6 @@ export default function Workspace({
             onNewNode
         }}>
             <div className="flex flex-grow">
-                <Sidebar/>
                 <Ide className={"flex-1"}>
 
                     <InteractiveCanvas newElements={newElements}/>
