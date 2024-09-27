@@ -1,6 +1,5 @@
 "use client"
 
-import DynamicTables from "@/components/DynamicTables";
 import React, {useEffect, useState} from "react";
 import {signIn, useSession} from "next-auth/react";
 import Workspace from "@/components/Workspace";
@@ -42,7 +41,7 @@ export default function DataExplorerPage() {
                 newElements={newElements}
                 onNewNode={handleNewNode}
 
-                onMessage={(message, append) => {
+                onMessage={(message) => {
                     console.log('Message:', message);
                 }
                 }
