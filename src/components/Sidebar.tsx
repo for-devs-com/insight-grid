@@ -21,7 +21,7 @@ export default function Sidebar({className}: SidebarProps) {
                         <a href="/data_transfer" className="block text-white">Easy Data Transfer</a>
                     </li>
                     <li>
-                        <a href="#" className="block text-white">Reports</a>
+                        <a href="/reports" className="block text-white">Reports</a>
                     </li>
                     <li>
                         <a href="#" className="block text-white">Settings</a>
