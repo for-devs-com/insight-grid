@@ -8,7 +8,7 @@ export type IDEProps = PropsWithChildren<{
 export default function Ide({children, className}: IDEProps) {
     return (
 
-        <div className="flex-1 h-full ">
+        <div className="flex-1">
 
             {children}
 
