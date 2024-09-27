@@ -10,15 +10,16 @@ import {
 } from "@/components/ui/dialog";
 import { nodeTypes } from '@/components/InteractiveCanvas.constants';
 import useCanvasStore from "@/store/useCanvasStore";
+import { v4 as uuidV4 } from 'uuid';
 
 
 export default function NodeMenu({ open, onClose}) {
     const addNode = useCanvasStore((state) => state.addNode);
 
-    const handleAddNode = (type) => {
+    const handleAddNode = (type: string) => {
         const position = { x: Math.random() * 250, y: Math.random() * 250 };
         const newNode = {
-            id: `${type}-${Math.random()}`,
+            id: `${type}-${uuidV4()}`,
             type,
             position,
             data: {label: `${type.charAt(0).toUpperCase() + type.slice(1)} Node`  },
