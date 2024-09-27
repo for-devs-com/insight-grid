@@ -65,10 +65,6 @@ export default function Workspace({
                                       onNewNode
                                   }: WorkspaceProps) {
 
-    /*const {data: existingMessages, isLoading: isLoadingMessages} = useMessagesQuery(conversationId)
-    const {data: tables, isLoading: isLoadingSchema} = useTablesQuery({conversationId: conversationId});*/
-    /*const {mutateAsync: saveMessage} = useMessageCreateMutation(conversationId)*/
-    const {setNodes, setEdges, setIsConnected, nodes, edges, isConnected } = useCanvasStore();
     const {data: session} = useSession();
     const userId = session?.user?.id as string;
 
@@ -108,8 +104,6 @@ export default function Workspace({
             await onReply?.(message, append);
         },
     });
-
-    const initialMessages = messages; // TODO:  research about useMemo() and useCallback() to optimize this
 
     const appendMessage = useCallback(
         async (message: Message | CreateMessage) => {
