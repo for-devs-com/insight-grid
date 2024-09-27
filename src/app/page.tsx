@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {useSession, signIn} from 'next-auth/react';
 import useCanvasStore from "@/store/useCanvasStore";
 import Workspace from "@/components/Workspace";
+import Sidebar from "@/components/Sidebar";
 
 
 export default function Page() {
@@ -36,22 +37,8 @@ export default function Page() {
     }
 
     return (
-
-        <div className={"h-full"}>
-
-            <Workspace
-                conversationId="1"
-                newElements={newElements}
-                onNewNode={handleNewNode}
-
-                onMessage={(message, append) => {
-                    console.log('Message:', message);
-                }
-                }
-                visibility='local'
-
-
-            />
+        <div className="flex flex-1">
+            Here the LaunchPage
         </div>
     );
 }
