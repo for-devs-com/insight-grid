@@ -46,7 +46,7 @@ const edgeOptions = {
 // Layout function
 const getLayoutedElements = (nodes, edges, options) => {
     const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
-    g.setGraph({ rankdir: options.direction });
+    g.setGraph({rankdir: options.direction});
 
     edges.forEach((edge) => g.setEdge(edge.source, edge.target));
     nodes.forEach((node) =>
@@ -65,7 +65,7 @@ const getLayoutedElements = (nodes, edges, options) => {
             const x = position.x - (node.measured?.width ?? 0) / 2;
             const y = position.y - (node.measured?.height ?? 0) / 2;
 
-            return { ...node, position: { x, y } };
+            return {...node, position: {x, y}};
         }),
         edges,
     };
@@ -73,9 +73,8 @@ const getLayoutedElements = (nodes, edges, options) => {
 
 // LayoutFlow component
 const LayoutFlow = (newElements: any) => {
-    const { fitView } = useReactFlow(); // Hook to fit the view
-    const { getInternalNode } = useReactFlow();
-    const store = useStoreApi();
+    const {fitView} = useReactFlow(); // Hook to fit the view
+    const {getInternalNode} = useReactFlow();
 
     // Destructure the store
     const {
@@ -126,7 +125,7 @@ const LayoutFlow = (newElements: any) => {
     const onLayout = useCallback(
         (direction) => {
             console.log(nodes);
-            const layouted = getLayoutedElements(nodes, edges, { direction });
+            const layouted = getLayoutedElements(nodes, edges, {direction});
 
             setNodes([...layouted.nodes]);
             setEdges([...layouted.edges]);
@@ -140,7 +139,7 @@ const LayoutFlow = (newElements: any) => {
 
 
     const getClosestEdge = useCallback((node: AppNode) => {
-        const { nodes } = useCanvasStore.getState();
+        const {nodes} = useCanvasStore.getState();
         const internalNode = getInternalNode(node.id);
 
         const closestNode = nodes.reduce(
@@ -202,9 +201,9 @@ const LayoutFlow = (newElements: any) => {
 
     return (
         /*Interactive Canvas*/
-        <div className="flex-1 flex-col flex-grow h-screen bg-gray-950">
+        <div className="flex flex-col h-screen bg-gray-950">
             {/* Node Menu*/}
-            <div className="flex  items-center py-2 bg-gray-800 border-b border-gray-700">
+            <div className="flex flex-row items-center py-3 bg-gray-800 border-b border-gray-700">
                 <button
                     onClick={() => setNodeMenuOpen(true)}
                     className="bg-blue-500 text-white mx-2 px-4 py-2 rounded"
@@ -230,7 +229,7 @@ const LayoutFlow = (newElements: any) => {
             </div>
 
             {/*Interactive Canvas*/}
-
+            <div className="flex-1">
                 <ReactFlow
                     nodes={nodes}
                     edges={edges}
@@ -240,8 +239,8 @@ const LayoutFlow = (newElements: any) => {
                     nodeTypes={nodeTypes}
                     className="bg-gray-800"
                     fitView
-                    style={{ width: '100%'}}
-                    connectionLineStyle={{ stroke: '#FFCC00' }}
+                    style={{width: '100%', height: '100%'}}
+                    connectionLineStyle={{stroke: '#FFCC00'}}
                     defaultEdgeOptions={edgeOptions}
                     maxZoom={4}
                     minZoom={0.2}
@@ -254,20 +253,21 @@ const LayoutFlow = (newElements: any) => {
                             default:
                                 return '#FFCC00';
                         }
-                    }} />
-                    <Controls />
-                    <Background gap={48} />
+                    }}/>
+                    <Controls/>
+                    <Background gap={56}/>
                 </ReactFlow>
+            </div>
 
         </div>
     );
 };
 
 /*InteractiveCanvas component*/
-export default function InteractiveCanvas({ newElements}) {
+export default function InteractiveCanvas({newElements}) {
     return (
         <ReactFlowProvider>
-            <LayoutFlow newElements={newElements} />
+            <LayoutFlow newElements={newElements}/>
         </ReactFlowProvider>
     );
 }
