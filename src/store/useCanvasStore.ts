@@ -1,19 +1,26 @@
-'use client';
 import { create } from 'zustand';
 import { createJSONStorage, devtools, persist } from 'zustand/middleware';
 import { addEdge, applyNodeChanges, applyEdgeChanges, Edge } from '@xyflow/react';
 import { AppNode, InteractiveCanvasState } from "@/lib/types";
+
+
 
 const useCanvasStore = create<InteractiveCanvasState>()(
 	devtools(
 		persist(
 			(set, get) => {
 				return ({
+					userId: '',
 					nodes: [] as AppNode[],
 					edges: [] as Edge[],
 					onNodesChange: (changes) => {
-						set({
-							nodes: applyNodeChanges(changes, get().nodes),
+						set((state) => {
+							const newState = {
+								...state,
+								nodes: applyNodeChanges(changes, state.nodes),
+							};
+							console.log('onNodesChange', newState);
+							return newState;
 						});
 					},
 					onEdgesChange: (changes) => {
@@ -55,7 +62,7 @@ const useCanvasStore = create<InteractiveCanvasState>()(
 			},
 			{
 				name: 'interactive-canvas-storage', // Nombre del local storage
-				storage: createJSONStorage(() => localStorage),
+				storage:  createJSONStorage(() => localStorage),
 			}
 		)
 	)
