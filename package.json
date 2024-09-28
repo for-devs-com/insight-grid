@@ -24,6 +24,7 @@
     "eslint": "8.56.0",
     "eslint-plugin-react": "7.34.2",
     "eslint-plugin-react-hooks": "4.6.2",
+    "framer-motion": "^11.9.0",
     "lucide-react": "^0.435.0",
     "next": "^14.2.6",
     "next-auth": "^4.24.7",
