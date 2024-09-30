@@ -203,12 +203,12 @@ const LayoutFlow = (newElements: any) => {
         /*Interactive Canvas*/
         <div className="flex flex-col h-screen bg-gray-950">
             {/* Node Menu*/}
-            <div className="flex flex-row items-center py-3 bg-gray-800 border-b border-gray-700">
+            <div className="flex flex-row items-center px-3 py-3 bg-gray-800 border-b border-gray-700">
                 <button
                     onClick={() => setNodeMenuOpen(true)}
                     className="bg-blue-500 text-white mx-2 px-4 py-2 rounded"
                 >
-                    Open Node Menu
+                    Open Menu
                 </button>
                 <NodeMenu
                     open={nodeMenuOpen}

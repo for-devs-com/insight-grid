@@ -1,14 +1,25 @@
+
 import { Inter } from "next/font/google";
 import { Providers } from "@/components/Providers";
 import Navbar from "@/components/Navbar";
 import "@/app/globals.css";
 import Sidebar from "@/components/Sidebar";
-import {metadata}  from "@/app/metadata";
+import {Metadata} from 'next';
+import ContentArea from "@/components/ContentArera";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const title = metadata.title;
-const description = metadata.description;
+
+export const metadata: Metadata = {
+    title: 'Data Analytic',
+    openGraph: {
+        title: 'Data Analytic',
+        description: 'Analytics and data exploration platform',
+        type: 'website',
+        locale: 'en_US',
+        url: 'https://dataanalytic.ai',
+    }
+    };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
@@ -22,14 +33,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Navbar />
 
                 {/* Contenido principal con Sidebar y contenido dinámico */}
-                <div className="flex flex-1 overflow-hidden">
-                    {/* Sidebar fijo en el lado izquierdo */}
-                    <Sidebar className="w-64 h-full"/>
+                <div className="flex flex-1 overflow-hidden relative">
+                    {/* Sidebar */}
+                    <Sidebar className="w-64" />
 
                     {/* Contenido dinámico */}
-                    <main className="flex-1 overflow-auto">
-                        {children}
-                    </main>
+                    <ContentArea>{children}</ContentArea>
                 </div>
             </div>
         </Providers>

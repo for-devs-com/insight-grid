@@ -6,7 +6,6 @@ import React, {createContext, useCallback, useContext, useEffect} from "react";
 import {ensureMessageId, ensureToolResult} from "@/lib/utils/util";
 import Ide from "@/components/ide";
 import InteractiveCanvas from "@/components/InteractiveCanvas";
-import useCanvasStore from "@/store/useCanvasStore";
 import {useSession} from "next-auth/react";
 import {verifyUserExistsInDb} from "@/lib/utils/stateService";
 

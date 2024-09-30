@@ -9,7 +9,7 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }) {
         console.log('Database Connection Form mounted');
     }, [router]);
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const queryBridgeApiUrl = process.env.QUERY_BRIDGE_PUBLIC_API_URL;
 
     const [error, setError] = useState(null);
     const [databaseType, setDatabaseType] = useState('postgresql');
@@ -30,7 +30,7 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }) {
             password
         };
         try {
-            const response = await fetch(`${apiUrl}/api/database/connect`, {
+            const response = await fetch(`${queryBridgeApiUrl}/query/bridge/database/connect`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
