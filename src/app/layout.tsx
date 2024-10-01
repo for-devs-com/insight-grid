@@ -1,48 +1,44 @@
-
 import { Inter } from "next/font/google";
-import { Providers } from "@/components/Providers";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import theme from "@/theme";
+import { Box } from "@mui/material";
+import { Providers } from "@/app/Providers";
 import Navbar from "@/components/Navbar";
-import "@/app/globals.css";
-import Sidebar from "@/components/Sidebar";
-import {Metadata} from 'next';
-import ContentArea from "@/components/ContentArera";
+import React from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
+export const metadata = {
+    title: "Insight Grid",
+    description: "Intelligent data insights for your business",
+};
 
-export const metadata: Metadata = {
-    title: 'Data Analytic',
-    openGraph: {
-        title: 'Data Analytic',
-        description: 'Analytics and data exploration platform',
-        type: 'website',
-        locale: 'en_US',
-        url: 'https://dataanalytic.ai',
-    }
-    };
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode; }) {
     return (
-        <html lang="en" className="h-full">
-        <body className={`${inter.className} bg-gray-50 text-gray-900 w-full h-full`}>
-        {/* Proveedores globales */}
-        <Providers>
-            {/* Contenedor principal que ocupa toda la pantalla */}
-            <div className="flex flex-col h-full">
-                {/* Navbar en la parte superior */}
-                <Navbar />
-
-                {/* Contenido principal con Sidebar y contenido dinámico */}
-                <div className="flex flex-1 overflow-hidden relative">
-                    {/* Sidebar */}
-                    <Sidebar className="w-64" />
-
-                    {/* Contenido dinámico */}
-                    <ContentArea>{children}</ContentArea>
-                </div>
-            </div>
-        </Providers>
+        <html lang="en">
+        <body className={inter.className}>
+        <AppRouterCacheProvider options={{ enableCssLayer: true }}>
+            <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <Providers>
+                    <Layout>{children}</Layout>
+                </Providers>
+            </ThemeProvider>
+        </AppRouterCacheProvider>
         </body>
         </html>
+    );
+}
+
+function Layout({ children }: { children: React.ReactNode }) {
+    return (
+        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100vh', overflowX: 'hidden' }}>
+            <Navbar />
+            <Box sx={{ flexGrow: 1, overflowY: 'auto', padding: 0, margin: 0 }}>
+                {children}
+            </Box>
+        </Box>
     );
 }
