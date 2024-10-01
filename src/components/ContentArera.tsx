@@ -8,12 +8,12 @@ interface ContentAreaProps {
 }
 
 const ContentArea: React.FC<ContentAreaProps> = ({ children }) => {
-    const { isSidebarOpen } = useSidebar();
+    const { isSidebarCollapsed } = useSidebar();
 
     return (
         <main
             className={`flex-1 overflow-auto transition-all duration-300 ease-in-out ${
-                isSidebarOpen ? 'ml-64' : 'ml-0'
+                isSidebarCollapsed ? 'ml-64' : 'ml-0'
             }`}
         >
             {children}

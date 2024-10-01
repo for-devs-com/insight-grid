@@ -1,5 +1,5 @@
 import React from 'react'
-import DataTransferComponent from '@/app/data-transfer/DataTransferComponent'
+import DataTransferComponent from '@/app/datatransfers/DataTransferComponent'
 
 export default function DataTransferPage() {
     return (
