@@ -14,14 +14,14 @@ export default function DynamicTables() {
     const [tables, setTables] = useState([]);
     const [selectedTables, setSelectedTables] = useState([]);
     const [selectedTableData, setSelectedTableData] = useState({});
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const apiUrl = process.env.NEXT_PUBLIC_QUERY_BRIDGE_API_URL;
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchTables = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`${apiUrl}/api/database/listTables`);
+                const response = await axios.get(`${apiUrl}/query/bridge/database/listTables`);
                 setTables(response.data || []);
                 console.log('Tables:', response.data);
             } catch (error) {
@@ -34,18 +34,17 @@ export default function DynamicTables() {
         if (apiUrl) fetchTables();
     }, [apiUrl]);
 
-    const fetchAllTableData = useCallback(async (newPage = 0) => {
+    const fetchAllTableData = useCallback(async (newPage = 0, size = 10) => {
         if (!selectedTables.length) return;
 
         setLoading(true);
         const newTableData = {...selectedTables};
 
-        for (const table of selectedTables) {
+        for (const tableName of selectedTables) {
             try {
-                // TODO: fix page size and total rows
-                const response = await axios.get(`${apiUrl}/api/database/data/${table}?page=${newPage}&size=10`);
+                const response = await axios.get(`${apiUrl}/query/bridge/database/data/${tableName}`);
                 if (response.data) {
-                    newTableData[table] = {
+                    newTableData[tableName] = {
                         columns: response.data.columns,
                         rows: response.data.rows,
                         pageSize: response.data.pageSize,
@@ -54,7 +53,7 @@ export default function DynamicTables() {
                     };
                 }
             } catch (error) {
-                console.error(`Error fetching data for table ${table}:`, error);
+                console.error(`Error fetching data for table ${tableName}:`, error);
             }
         }
 
