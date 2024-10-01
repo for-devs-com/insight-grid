@@ -1,15 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
-export default function DatabaseConnectionForm({ onConnectionSuccess }) {
-    const router = useRouter();
+interface DatabaseConnectionFormProps {
+    onConnectionSuccess: () => void;
+}
 
-    useEffect(() => {
-        if (!router) return;
-        console.log('Database Connection Form mounted');
-    }, [router]);
-
-    const queryBridgeApiUrl = process.env.QUERY_BRIDGE_PUBLIC_API_URL;
+export default function DatabaseConnectionForm({ onConnectionSuccess }: DatabaseConnectionFormProps) {
+    const queryBridgeApiUrl = process.env.NEXT_PUBLIC_QUERY_BRIDGE_API_URL;
 
     const [error, setError] = useState(null);
     const [databaseType, setDatabaseType] = useState('postgresql');
@@ -19,7 +15,7 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }) {
     const [userName, setUserName] = useState('postgres');
     const [password, setPassword] = useState('qwerty');
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = async (event: { preventDefault: () => void; }) => {
         event.preventDefault();
         const connectionData = {
             databaseType: databaseType,
@@ -40,8 +36,9 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }) {
             if (response.ok) {
                 onConnectionSuccess();
             } else {
-                const errorMsg = await response.text();
-                setError(`Conexión fallida: ${errorMsg}`);
+                const error = await response.json();
+                setError(error.message);
+                console.log('Error:', error);
             }
         } catch (error) {
             console.error('Error al conectar con la base de datos', error);
@@ -54,7 +51,7 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }) {
         <div className="container mx-auto max-w-xs p-4">
             <div className="mt-8 flex flex-col items-center">
                 <h1 className=" font-bold">Database Connection Form</h1>
-                <form className="w-full mt-4" noValidate onSubmit={handleSubmit}>
+                <form className="w-full mt-4"  onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label htmlFor="databaseManager" className="block text-gray-700">Database Manager</label>
                         <input
