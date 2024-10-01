@@ -1,5 +1,5 @@
 'use client';
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {useSession, signIn} from 'next-auth/react';
 
 export default function Page() {

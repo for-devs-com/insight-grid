@@ -1,7 +1,7 @@
 "use client"
 
 import React, {useEffect, useState} from "react";
-import {signIn, useSession} from "next-auth/react";
+import {useSession} from "next-auth/react";
 import Workspace from "@/components/Workspace";
 import useCanvasStore from "@/store/useCanvasStore";
 

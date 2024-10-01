@@ -1,7 +1,7 @@
 'use client';
 
-import React, {useEffect, useState} from 'react';
-import {Handle, NodeResizeControl, NodeResizer, Position} from '@xyflow/react';
+import React, {useEffect} from 'react';
+import {Handle, NodeResizeControl, Position} from '@xyflow/react';
 import DatabaseConnectionForm from '../DatabaseConnectionForm';
 import DynamicTables from "@/components/DynamicTables";
 import useCanvasStore from "@/store/useCanvasStore";
