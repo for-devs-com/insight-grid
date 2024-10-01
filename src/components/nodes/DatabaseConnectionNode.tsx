@@ -37,7 +37,7 @@ const DatabaseConnectionNode = ({id}) => {
                 <div>
                     {/* Renderiza el explorador del esquema de la base de datos */}
                     <DynamicTables/>
-                    <p>Database Schema Explorer for-devs.com</p>
+                    <p>Database Schema Explorer by for-devs.com</p>
                 </div>
             )}
             <NodeResizeControl style={controlStyle} minWidth={100} minHeight={50}>
