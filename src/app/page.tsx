@@ -1,24 +1,9 @@
 'use client';
 import React, {useEffect, useState} from 'react';
 import {useSession, signIn} from 'next-auth/react';
-import useCanvasStore from "@/store/useCanvasStore";
-import Workspace from "@/components/Workspace";
-import Sidebar from "@/components/Sidebar";
-
 
 export default function Page() {
     const {data: session, status} = useSession();
-    const [newElements, setNewElements] = useState([]);
-    const setNodes = useCanvasStore((state) => state.setNodes);
-
-    const handleNewNode = (node: any) => {
-        setNewElements((prev) => [...prev, node]);
-    };
-
-    useEffect(() => {
-        setNodes(newElements);
-        console.log('newElements', newElements);
-    }, [newElements, setNodes]);
 
     if (status === 'loading') {
         return <p>Loading...</p>;
