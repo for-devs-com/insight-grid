@@ -133,8 +133,8 @@ export default function Workspace({
             newElements,
             onNewNode
         }}>
-            <div className="flex flex-grow">
-                <Ide className={"flex-1"}>
+            <div className="w-full h-full lg:flex flex-col lg:flex-row gap-8">
+                <Ide className="flex-1 sm:py-6 sm:pl-6">
 
                     <InteractiveCanvas newElements={newElements}/>
                 </Ide>
