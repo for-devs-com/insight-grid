@@ -8,7 +8,7 @@ import {SidebarProvider} from "@/store/SidebarContext";
 export function Providers({children}: Readonly<{ children: React.ReactNode }>) {
 
     return <SessionProvider>
-        <ThemeProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             <AppProvider>
                 <SidebarProvider>
                     {children}
