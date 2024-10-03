@@ -24,7 +24,7 @@ export default function DataExplorerPage() {
     }
 
     return (
-        <div>
+        <div className="h-full w-full">
             <Workspace
                 conversationId="1"
                 newElements={newElements}

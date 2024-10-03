@@ -22,7 +22,7 @@ export default function Page() {
     }
 
     return (
-        <div className="flex flex-1">
+        <div className="flex flex-1 container">
             Here the LaunchPage
         </div>
     );
