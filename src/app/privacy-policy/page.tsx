@@ -1,29 +1,6 @@
 'use client'
 
 import React from 'react'
-import {
-    Container,
-    Typography,
-    Box,
-    Paper,
-    List,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
-    Divider,
-    Button,
-    ThemeProvider,
-    createTheme,
-    CssBaseline,
-} from '@mui/material'
-import {
-    Security,
-    Info,
-    Cookie,
-    Link as LinkIcon,
-    VerifiedUser,
-    ArrowBack,
-} from '@mui/icons-material'
 import Navbar from '@/components/Navbar'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -31,68 +8,48 @@ import { useRouter } from 'next/navigation'
 const PrivacyPolicy = () => {
     const router = useRouter()
 
-    const theme = createTheme({
-        palette: {
-            mode: 'light',
-            primary: {
-                main: '#0f2b46',
-            },
-            secondary: {
-                main: '#f50057',
-            },
-            background: {
-                default: '#ffffff',
-                paper: '#ffffff',
-            },
-            text: {
-                primary: '#0f2b46',
-                secondary: '#0f2b46',
-            },
-        },
-        typography: {
-            fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
-            h1: {
-                fontWeight: 700,
-                color: '#0f2b46',
-            },
-            h2: {
-                fontWeight: 600,
-                color: '#0f2b46',
-            },
-            body1: {
-                color: '#0f2b46',
-            },
-            body2: {
-                color: '#0f2b46',
-            },
-        },
-    })
-
     const sections = [
         {
-            title: 'Information Collected',
-            icon: <Info />,
-            content: 'Our website may collect personal information such as your name, contact information, email address, and demographic information. Additional information may be required for order processing, delivery, or billing.',
+            title: 'Información Recopilada',
+            icon: 'ℹ️',
+            content:
+                'En DataAnalytic, recopilamos información personal como su nombre, correo electrónico, información de contacto y detalles demográficos cuando se registra o utiliza nuestros servicios. También podemos recopilar información sobre el uso de nuestro sitio web a través de cookies y tecnologías similares.',
         },
         {
-            title: 'Use of Information',
-            icon: <VerifiedUser />,
-            content: 'We use the collected information to provide and improve our services, maintain user records, process orders, and send relevant promotional emails. You can opt out of promotional communications at any time.',
+            title: 'Uso de la Información',
+            icon: '🔒',
+            content:
+                'Utilizamos su información para proporcionar y mejorar nuestros servicios, procesar transacciones, enviar comunicaciones relevantes y mejorar la experiencia del usuario. No compartimos su información personal con terceros sin su consentimiento, excepto cuando sea necesario para cumplir con la ley o proporcionar nuestros servicios.',
         },
         {
-            title: 'Cookies',
-            icon: <Cookie />,
-            content: 'We use cookies to enhance your browsing experience, analyze site traffic, and personalize content. You can control cookie settings through your browser preferences.',
+            title: 'Cookies y Tecnologías Similares',
+            icon: '🍪',
+            content:
+                'Utilizamos cookies y tecnologías similares para personalizar su experiencia, analizar el tráfico del sitio y comprender cómo interactúa con nuestro contenido. Puede controlar el uso de cookies a través de la configuración de su navegador.',
         },
         {
-            title: 'Third-Party Links',
-            icon: <LinkIcon />,
-            content: 'Our website may contain links to third-party sites. We are not responsible for the privacy practices of these external sites and encourage you to review their policies.',
+            title: 'Enlaces a Terceros',
+            icon: '🔗',
+            content:
+                'Nuestro sitio web puede contener enlaces a sitios web de terceros. No somos responsables de las prácticas de privacidad de estos sitios y le recomendamos que revise sus políticas de privacidad de manera independiente.',
         },
         {
-            title: 'Data Security',
-            icon: <Security />,
-            content: 'We implement robust security measures to protect your personal information. However, no method of internet transmission is 100% secure, and we cannot guarantee absolute security.',
+            title: 'Seguridad de los Datos',
+            icon: '🛡️',
+            content:
+                'Implementamos medidas de seguridad razonables para proteger su información personal contra acceso no autorizado, alteración, divulgación o destrucción. Sin embargo, ninguna transmisión por Internet es completamente segura y no podemos garantizar la seguridad absoluta de su información.',
+        },
+        {
+            title: 'Cambios en la Política de Privacidad',
+            icon: '🔄',
+            content:
+                'Nos reservamos el derecho de modificar esta Política de Privacidad en cualquier momento. Le notificaremos sobre cambios significativos a través de nuestro sitio web o por otros medios apropiados.',
+        },
+        {
+            title: 'Contacto',
+            icon: '✉️',
+            content:
+                'Si tiene preguntas o inquietudes sobre esta Política de Privacidad, por favor póngase en contacto con nosotros en privacy@dataanalytic.ai.',
         },
     ]
 
@@ -101,70 +58,57 @@ const PrivacyPolicy = () => {
     }
 
     return (
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: 'background.default' }}>
-                <Navbar />
-                <Container component="main" maxWidth="md" sx={{ mt: 12, mb: 8 }}>
-                    <Button
-                        startIcon={<ArrowBack />}
-                        onClick={() => handleNavigation('home')}
-                        sx={{ mb: 2, color: 'primary.main' }}
-                    >
-                        Back to Home
-                    </Button>
-                    <Paper elevation={3} sx={{ p: 4, borderRadius: 2, bgcolor: 'background.paper' }}>
-                        <Typography variant="h3" component="h1" gutterBottom sx={{ color: 'primary.main', fontWeight: 700 }}>
-                            Privacy Policy
-                        </Typography>
-                        <Typography variant="body1" paragraph>
-                            DataAnalytic is committed to protecting your privacy and ensuring the security of your personal information. This policy outlines how we collect, use, and safeguard your data when you use our website and services.
-                        </Typography>
-                        <List>
-                            {sections.map((section, index) => (
-                                <React.Fragment key={index}>
-                                    <ListItem alignItems="flex-start" sx={{ py: 3 }}>
-                                        <ListItemIcon sx={{ mt: 1, color: 'primary.main' }}>{section.icon}</ListItemIcon>
-                                        <ListItemText
-                                            primary={
-                                                <Typography variant="h6" component="h2" sx={{ color: 'primary.main', mb: 1 }}>
-                                                    {section.title}
-                                                </Typography>
-                                            }
-                                            secondary={
-                                                <Typography variant="body2" color="text.secondary">
-                                                    {section.content}
-                                                </Typography>
-                                            }
-                                        />
-                                    </ListItem>
-                                    {index < sections.length - 1 && <Divider variant="inset" component="li" />}
-                                </React.Fragment>
-                            ))}
-                        </List>
-                        <Typography variant="body2" sx={{ mt: 4, fontStyle: 'italic' }}>
-                            DataAnalytic reserves the right to update this Privacy Policy. We encourage you to review this page periodically for any changes.
-                        </Typography>
-                        <Box sx={{ mt: 4 }}>
-                            <Typography variant="body1">
-                                If you have any questions about this Privacy Policy, please{' '}
-                                <Link href="#" onClick={() => handleNavigation('contact')} style={{ color: theme.palette.primary.main }}>
-                                    contact us
-                                </Link>
-                                .
-                            </Typography>
-                        </Box>
-                    </Paper>
-                </Container>
-                <Box component="footer" sx={{ py: 3, px: 2, mt: 'auto', bgcolor: 'primary.main' }}>
-                    <Container maxWidth="sm">
-                        <Typography variant="body2" align="center" color="white">
-                            © {new Date().getFullYear()} DataAnalytic. All rights reserved.
-                        </Typography>
-                    </Container>
-                </Box>
-            </Box>
-        </ThemeProvider>
+        <div className="flex flex-col min-h-screen bg-background text-foreground">
+            <Navbar />
+            <div className="container mx-auto px-4 py-12">
+                <button
+                    onClick={() => handleNavigation('home')}
+                    className="flex items-center mb-6 text-primary hover:underline"
+                >
+                    {/* Puedes usar un icono de flecha si lo deseas */}
+                    &larr; Volver al Inicio
+                </button>
+                <div className="bg-card p-8 rounded-2xl shadow-lg">
+                    <h1 className="text-3xl font-bold mb-6 text-primary">
+                        Política de Privacidad
+                    </h1>
+                    <p className="mb-6">
+                        En <span className="font-semibold">DataAnalytic</span>, estamos comprometidos a proteger su privacidad y garantizar la seguridad de su información personal. Esta Política de Privacidad describe cómo recopilamos, usamos y protegemos sus datos cuando utiliza nuestro sitio web y servicios.
+                    </p>
+                    {sections.map((section, index) => (
+                        <div key={index} className="mb-8">
+                            <div className="flex items-center mb-4">
+                                <span className="text-2xl mr-2">{section.icon}</span>
+                                <h2 className="text-2xl font-semibold text-primary">{section.title}</h2>
+                            </div>
+                            <p className="text-base leading-7">{section.content}</p>
+                            {index < sections.length - 1 && (
+                                <hr className="my-6 border-border" />
+                            )}
+                        </div>
+                    ))}
+                    <p className="mt-8 italic">
+                        Le recomendamos que revise esta Política de Privacidad periódicamente para estar informado sobre cómo protegemos la información que recopilamos.
+                    </p>
+                    <div className="mt-6">
+                        <p>
+                            Si tiene alguna pregunta sobre esta Política de Privacidad, por favor{' '}
+                            <Link href="/contact" className="text-primary hover:underline">
+                                contáctenos
+                            </Link>
+                            .
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <footer className="bg-primary text-primary-foreground py-4 mt-auto">
+                <div className="container mx-auto text-center">
+                    <p>
+                        &copy; {new Date().getFullYear()} DataAnalytic. Todos los derechos reservados.
+                    </p>
+                </div>
+            </footer>
+        </div>
     )
 }
 
