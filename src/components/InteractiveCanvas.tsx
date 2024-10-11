@@ -1,5 +1,5 @@
 'use client';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
     Background,
     BackgroundVariant,
@@ -22,6 +22,7 @@ import Dagre from '@dagrejs/dagre';
 
 const MIN_DISTANCE = 150;
 
+// The selector function is used to select the state from the store
 const selector = (state: InteractiveCanvasState) => ({
     nodes: state.nodes,
     edges: state.edges,
@@ -43,6 +44,7 @@ const edgeOptions = {
     },
 };
 
+// this function is used to layout the elements in the canvas
 const getLayoutedElements = (nodes, edges, options) => {
     const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
     g.setGraph({ rankdir: options.direction });
@@ -70,16 +72,17 @@ const getLayoutedElements = (nodes, edges, options) => {
     };
 };
 
+// this is the main component that renders the interactive canvas
 const LayoutFlow = (newElements: any) => {
     const { fitView } = useReactFlow();
     const { getInternalNode } = useReactFlow();
+    const nodes = useCanvasStore((state) => state.nodes);
+    const edges = useCanvasStore((state) => state.edges);
+    const onNodesChange = useCanvasStore((state) => state.onNodesChange);
+    const onEdgesChange = useCanvasStore((state) => state.onEdgesChange);
+    const onConnect = useCanvasStore((state) => state.onConnect);
 
     const {
-        nodes,
-        edges,
-        onNodesChange,
-        onEdgesChange,
-        onConnect,
         setNodes,
         setEdges,
         addNode,
@@ -87,6 +90,12 @@ const LayoutFlow = (newElements: any) => {
         isConnected,
         setIsConnected,
     } = useCanvasStore(useShallow(selector));
+
+    const memoizedNodes = useMemo(() => nodes, [nodes]);
+    const memoizedEdges = useMemo(() => edges, [edges]);
+    const memoizedOnNodesChange = useCallback(onNodesChange, []);
+    const memoizedOnEdgesChange = useCallback(onEdgesChange, []);
+    const memoizedOnConnect = useCallback(onConnect, []);
 
     const [nodeMenuOpen, setNodeMenuOpen] = useState(false);
 
@@ -102,14 +111,14 @@ const LayoutFlow = (newElements: any) => {
                 console.error('Node position is invalid:', newNode);
             }
         },
-        [setNodes],
+        [addNode],
     );
 
-    useEffect(() => {
+/*    useEffect(() => {
         if (newElements.length) {
             newElements.forEach(addValidNode);
         }
-    }, [newElements, addValidNode]);
+    }, [newElements, addValidNode]);*/
 
     const handleNodesDelete = (deletedNodes: any[]) => {
         deletedNodes.forEach((node) => removeNode(node.id));
@@ -216,12 +225,13 @@ const LayoutFlow = (newElements: any) => {
 
             <div className="flex flex-grow  h-full w-full">
                 <ReactFlow
-                    nodes={nodes}
-                    edges={edges}
-                    onNodesChange={onNodesChange}
-                    onEdgesChange={onEdgesChange}
-                    onConnect={onConnect}
+                    nodes={memoizedNodes}
+                    edges={memoizedEdges}
+                    onNodesChange={memoizedOnNodesChange}
+                    onEdgesChange={memoizedOnEdgesChange}
+                    onConnect={memoizedOnConnect}
                     nodeTypes={nodeTypes}
+
                     className="bg-background"
                     fitView
                     style={{ width: '100%', height: '100%' }}
