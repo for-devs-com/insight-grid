@@ -1,5 +1,6 @@
+'use client'
+
 import React from 'react'
-import { Typography, Button, Paper } from '@mui/material'
 import { motion } from 'framer-motion'
 
 interface CompletionFormProps {
@@ -13,19 +14,15 @@ export const CompletionForm: React.FC<CompletionFormProps> = ({ onReset }) => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
         >
-            <Paper elevation={3} sx={{ mt: 8, p: 4, borderRadius: 2 }}>
-                <Typography variant="h5" gutterBottom>
-                    Transfer Complete
-                </Typography>
-                <Button
-                    variant="outlined"
-                    color="primary"
+            <div className="mt-8 p-6 rounded-2xl shadow-lg bg-card">
+                <h2 className="text-2xl font-semibold mb-6">Transfer Complete</h2>
+                <button
                     onClick={onReset}
-                    fullWidth
+                    className="w-full py-3 text-lg font-medium rounded-2xl border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors duration-200"
                 >
                     Start New Transfer
-                </Button>
-            </Paper>
+                </button>
+            </div>
         </motion.div>
     )
 }
