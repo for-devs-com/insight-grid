@@ -1,8 +1,7 @@
-
-
-import { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Database, Server, User, Key } from 'lucide-react';
+import { FormStateContext } from '@/store/form-state-provider';
 
 interface DatabaseConnectionFormProps {
     onConnectionSuccess: () => void;
@@ -15,117 +14,118 @@ const databaseManagers = [
     { value: 'oracle', label: 'Oracle', defaultPort: 1521 },
 ];
 
-export default function DatabaseConnectionForm({ onConnectionSuccess }: DatabaseConnectionFormProps) {
-    const queryBridgeApiUrl = process.env.NEXT_PUBLIC_QUERY_BRIDGE_API_URL;
+const DatabaseConnectionForm: React.FC<DatabaseConnectionFormProps> = ({ onConnectionSuccess }) => {
+    console.log('Rendering DatabaseConnectionForm');
+    const { formState, setFormState } = useContext(FormStateContext);
+
+    if (!formState || !setFormState) {
+        throw new Error('FormStateContext must be used within a FormStateProvider');
+    }
+
+    const apiUrl = process.env.NEXT_PUBLIC_QUERY_BRIDGE_API_URL;
 
     const [error, setError] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
-    const [databaseType, setDatabaseType] = useState('');
-    const [host, setHost] = useState('localhost');
-    const [port, setPort] = useState<number | null>(null);
-    const [databaseName, setDatabaseName] = useState('for-devs-university');
-    const [userName, setUserName] = useState('postgres');
-    const [password, setPassword] = useState('qwerty');
-    const [sid, setSid] = useState('');
-    const [instance, setInstance] = useState('');
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = event.target;
+        setFormState((prevFormState) => ({
+            ...prevFormState,
+            [name]: name === 'port' ? (value === '' ? '' : Number(value)) : value,
+        }));
+    };
 
-    const validateForm = () => {
-        if (!databaseType || !host || !port || !databaseName || !userName || !password) {
-            setError('Please fill in all required fields.');
-            return false;
-        }
-        if (databaseType === 'oracle' && !sid) {
-            setError('Please provide the SID for Oracle.');
-            return false;
-        }
-        if (databaseType === 'sqlserver' && !instance) {
-            setError('Please provide the Instance Name for SQL Server.');
-            return false;
-        }
-        return true;
+    const handleDatabaseTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const newDatabaseType = event.target.value;
+        const defaultPort = databaseManagers.find((db) => db.value === newDatabaseType)?.defaultPort || '';
+        setFormState((prevFormState) => ({
+            ...prevFormState,
+            databaseType: newDatabaseType,
+            port: defaultPort,
+            // Resetear campos específicos
+            sid: newDatabaseType === 'oracle' ? '' : undefined,
+            instance: newDatabaseType === 'sqlserver' ? '' : undefined,
+        }));
     };
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setError(null);
-
-        if (!queryBridgeApiUrl) {
-            console.error('NEXT_PUBLIC_QUERY_BRIDGE_API_URL is not defined.');
-            setError('Configuration error. Please contact the administrator.');
-            return;
-        }
-
-        if (!validateForm()) {
-            return;
-        }
-
-        setIsLoading(true);
+        setLoading(true);
 
         const connectionData = {
-            databaseType,
-            host,
-            port: Number(port),
-            databaseName,
-            userName,
-            password,
-            ...(databaseType === 'oracle' && { sid }),
-            ...(databaseType === 'sqlserver' && { instance }),
+            databaseType: formState.databaseType,
+            host: formState.host,
+            port: formState.port,
+            databaseName: formState.databaseName,
+            userName: formState.userName,
+            password: formState.password,
+            sid: formState.sid,
+            instance: formState.instance,
         };
 
         try {
-            const response = await fetch(`${queryBridgeApiUrl}/query/bridge/database/connect`, {
+            const response = await fetch(`${apiUrl}/query/bridge/database/connect`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(connectionData),
             });
-
             if (response.ok) {
                 onConnectionSuccess();
             } else {
-                let errorMessage = 'Unknown error connecting to the database.';
-                try {
-                    const errorData = await response.json();
-                    errorMessage = errorData.message || errorMessage;
-                } catch (parseError) {
-                    console.error('Error parsing error response:', parseError);
-                }
-                setError(errorMessage);
-                console.error('Server response error:', response.status, errorMessage);
+                const errorMsg = await response.text();
+                setError(`Conexión fallida: ${errorMsg}`);
             }
         } catch (error) {
-            console.error('Error connecting to the database:', error);
-            setError('Unable to connect to the server. Please check your internet connection.');
+            console.error('Error al conectar con la base de datos', error);
+            setError('Error al conectar con la base de datos');
         } finally {
-            setIsLoading(false);
+            setLoading(false);
         }
     };
 
+    const InputField = ({ icon: Icon, ...props }) => (
+        <div
+            className="mb-4 flex items-center border rounded-md px-2"
+            onKeyDown={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            onWheel={(e) => e.stopPropagation()}
+        >
+            <Icon className="text-gray-400 mr-2" />
+            <input
+                {...props}
+                className="w-full py-2 outline-none bg-transparent"
+                data-no-drag
+                data-no-pan
+            />
+        </div>
+    );
+
     const renderDatabaseSpecificFields = () => {
-        if (databaseType === 'oracle') {
+        if (formState.databaseType === 'oracle') {
             return (
                 <InputField
                     icon={Database}
                     type="text"
                     id="sid"
                     name="sid"
-                    value={sid}
-                    onChange={(e) => setSid(e.target.value)}
+                    value={formState.sid || ''}
+                    onChange={handleChange}
                     placeholder="SID"
                     required
                 />
             );
-        } else if (databaseType === 'sqlserver') {
+        } else if (formState.databaseType === 'sqlserver') {
             return (
                 <InputField
                     icon={Database}
                     type="text"
                     id="instance"
                     name="instance"
-                    value={instance}
-                    onChange={(e) => setInstance(e.target.value)}
+                    value={formState.instance || ''}
+                    onChange={handleChange}
                     placeholder="Instance Name"
                     required
                 />
@@ -134,16 +134,6 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }: Database
         return null;
     };
 
-    const InputField = ({ icon: Icon, ...props }) => (
-        <div className="mb-4 flex items-center border rounded-md px-2">
-            <Icon className="text-gray-400 mr-2" />
-            <input
-                {...props}
-                className="w-full py-2 outline-none"
-            />
-        </div>
-    );
-
     return (
         <div className="container mx-auto max-w-md p-4">
             <motion.div
@@ -151,28 +141,31 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }: Database
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
             >
-                <div className="mt-8 flex flex-col items-center">
-                    <h1 className="font-bold text-xl mb-4">Database Connection Form</h1>
+                <div className="mt-4">
+                    <h2 className="font-bold text-xl mb-4 text-center">
+                        Database Connection
+                    </h2>
                     <form className="w-full" onSubmit={handleSubmit}>
-                        <div className="mb-4">
-                            <label htmlFor="databaseManager" className="block text-gray-700">Database Manager</label>
+                        <div
+                            className="mb-4"
+                            onKeyDown={(e) => e.stopPropagation()}
+                            onMouseDown={(e) => e.stopPropagation()}
+                            onWheel={(e) => e.stopPropagation()}
+                        >
+                            <label htmlFor="databaseManager" className="block text-gray-700 mb-1">
+                                Database Manager
+                            </label>
                             <select
                                 id="databaseManager"
-                                name="databaseManager"
-                                value={databaseType}
-                                onChange={(e) => {
-                                    setDatabaseType(e.target.value);
-                                    // Update default port when changing database manager
-                                    const selectedManager = databaseManagers.find(manager => manager.value === e.target.value);
-                                    setPort(selectedManager ? selectedManager.defaultPort : null);
-                                    // Reset specific fields
-                                    setSid('');
-                                    setInstance('');
-                                }}
+                                name="databaseType"
+                                value={formState.databaseType}
+                                onChange={handleDatabaseTypeChange}
                                 className="w-full px-4 py-2 border rounded-md"
                                 required
                             >
-                                <option value="">Select a database manager</option>
+                                <option value="" disabled>
+                                    Select a Database Manager
+                                </option>
                                 {databaseManagers.map((manager) => (
                                     <option key={manager.value} value={manager.value}>
                                         {manager.label}
@@ -185,8 +178,8 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }: Database
                             type="text"
                             id="host"
                             name="host"
-                            value={host}
-                            onChange={(e) => setHost(e.target.value)}
+                            value={formState.host}
+                            onChange={handleChange}
                             placeholder="Host"
                             required
                         />
@@ -195,8 +188,8 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }: Database
                             type="number"
                             id="port"
                             name="port"
-                            value={port}
-                            onChange={(e) => setPort(e.target.value)}
+                            value={formState.port}
+                            onChange={handleChange}
                             placeholder="Port"
                             required
                         />
@@ -205,8 +198,8 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }: Database
                             type="text"
                             id="databaseName"
                             name="databaseName"
-                            value={databaseName}
-                            onChange={(e) => setDatabaseName(e.target.value)}
+                            value={formState.databaseName}
+                            onChange={handleChange}
                             placeholder="Database Name"
                             required
                         />
@@ -216,8 +209,8 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }: Database
                             type="text"
                             id="userName"
                             name="userName"
-                            value={userName}
-                            onChange={(e) => setUserName(e.target.value)}
+                            value={formState.userName}
+                            onChange={handleChange}
                             placeholder="User"
                             required
                         />
@@ -226,8 +219,8 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }: Database
                             type="password"
                             id="password"
                             name="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            value={formState.password}
+                            onChange={handleChange}
                             placeholder="Password"
                             required
                         />
@@ -238,16 +231,15 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }: Database
                         )}
                         <button
                             type="submit"
-                            disabled={isLoading}
-                            className={`w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${
-                                isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                            } flex items-center justify-center`}
+                            disabled={loading}
+                            className={`w-full bg-primary text-primary-foreground font-bold py-2 px-4 rounded ${
+                                loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary-dark'
+                            } flex items-center justify-center transition-colors duration-200`}
                         >
-                            {isLoading ? (
+                            {loading ? (
                                 <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
-                                    {/* SVG spinner */}
-                                    <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="4" fill="none" />
-                                    <path d="M4 12a8 8 0 018-8" stroke="white" strokeWidth="4" />
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                    <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="4" />
                                 </svg>
                             ) : (
                                 'Connect'
@@ -258,4 +250,6 @@ export default function DatabaseConnectionForm({ onConnectionSuccess }: Database
             </motion.div>
         </div>
     );
-}
+};
+
+export default React.memo(DatabaseConnectionForm);
