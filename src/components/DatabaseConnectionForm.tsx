@@ -1,11 +1,15 @@
+// src/components/DatabaseConnectionForm.tsx
+
+"use client";
+
 import React, { useContext, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Database, Server, User, Key } from 'lucide-react';
 import { FormStateContext } from '@/store/form-state-provider';
+import { useSession } from "next-auth/react";
+import axiosInstance from '@/lib/utils/axiosInstance'; // Importa la instancia personalizada
 
-interface DatabaseConnectionFormProps {
-    onConnectionSuccess: () => void;
-}
+interface DatabaseConnectionFormProps {}
 
 const databaseManagers = [
     { value: 'postgresql', label: 'PostgreSQL', defaultPort: 5432 },
@@ -14,79 +18,130 @@ const databaseManagers = [
     { value: 'oracle', label: 'Oracle', defaultPort: 1521 },
 ];
 
-const DatabaseConnectionForm: React.FC<DatabaseConnectionFormProps> = ({ onConnectionSuccess }) => {
-    console.log('Rendering DatabaseConnectionForm');
-    const { formState, setFormState } = useContext(FormStateContext);
+interface FormData {
+    databaseType: string;
+    host: string;
+    port: number | '';
+    databaseName: string;
+    userName: string;
+    password: string;
+    sid?: string;
+    instance?: string;
+}
 
-    if (!formState || !setFormState) {
-        throw new Error('FormStateContext must be used within a FormStateProvider');
+const DatabaseConnectionForm: React.FC<DatabaseConnectionFormProps> = () => {
+    console.log('Rendering DatabaseConnectionForm');
+    const formStateContext = useContext(FormStateContext);
+    if (!formStateContext) {
+        throw new Error("DatabaseConnectionForm must be used within a FormStateProvider");
+    }
+    const { setConnected } = formStateContext;
+    const { data: session, status } = useSession();
+
+    if (status === 'loading') {
+        return <div>Loading...</div>;
+    }
+
+    if (!session || !session.accessToken) {
+        return <div>Por favor, inicia sesión para acceder a este formulario.</div>;
     }
 
     const apiUrl = process.env.NEXT_PUBLIC_QUERY_BRIDGE_API_URL;
 
+    const [formData, setFormData] = useState<FormData>({
+        databaseType: '',
+        host: 'localhost',
+        port: '',
+        databaseName: '',
+        userName: '',
+        password: '',
+        sid: '',
+        instance: '',
+    });
+
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = event.target;
-        setFormState((prevFormState) => ({
-            ...prevFormState,
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
             [name]: name === 'port' ? (value === '' ? '' : Number(value)) : value,
         }));
     };
 
-    const handleDatabaseTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const newDatabaseType = event.target.value;
-        const defaultPort = databaseManagers.find((db) => db.value === newDatabaseType)?.defaultPort || '';
-        setFormState((prevFormState) => ({
-            ...prevFormState,
+    const handleDatabaseTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newDatabaseType = e.target.value;
+        const defaultPort = databaseManagers.find(db => db.value === newDatabaseType)?.defaultPort || '';
+        setFormData((prev) => ({
+            ...prev,
             databaseType: newDatabaseType,
             port: defaultPort,
             // Resetear campos específicos
-            sid: newDatabaseType === 'oracle' ? '' : undefined,
-            instance: newDatabaseType === 'sqlserver' ? '' : undefined,
+            sid: newDatabaseType === 'oracle' ? '' : '',
+            instance: newDatabaseType === 'sqlserver' ? '' : '',
         }));
     };
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
         setError(null);
         setLoading(true);
 
         const connectionData = {
-            databaseType: formState.databaseType,
-            host: formState.host,
-            port: formState.port,
-            databaseName: formState.databaseName,
-            userName: formState.userName,
-            password: formState.password,
-            sid: formState.sid,
-            instance: formState.instance,
+            databaseType: formData.databaseType,
+            host: formData.host,
+            port: formData.port,
+            databaseName: formData.databaseName,
+            userName: formData.userName,
+            password: formData.password,
+            sid: formData.sid,
+            instance: formData.instance,
         };
 
+        // Verifica que el token esté disponible
+        if (!session || !session.accessToken) {
+            setError('Authentication error. Please log in again.');
+            setLoading(false);
+            return;
+        }
+
         try {
-            const response = await fetch(`${apiUrl}/query/bridge/database/connect`, {
-                method: 'POST',
+            const response = await axiosInstance.post('/query/bridge/database/connect', connectionData, {
                 headers: {
                     'Content-Type': 'application/json',
+                    // 'Authorization': `Bearer ${session.accessToken}`, // Ya manejado por axiosInstance
                 },
-                body: JSON.stringify(connectionData),
             });
-            if (response.ok) {
-                onConnectionSuccess();
+
+            if (response.status === 200) {
+                // Actualiza el contexto con la conexión establecida
+                setConnected(true, connectionData);
+                // Opcional: limpiar el formulario o realizar otras acciones
+                // setFormData({
+                //     databaseType: '',
+                //     host: 'localhost',
+                //     port: '',
+                //     databaseName: '',
+                //     userName: '',
+                //     password: '',
+                //     sid: '',
+                //     instance: '',
+                // });
             } else {
-                const errorMsg = await response.text();
+                const errorMsg = response.data?.message || 'Failed to connect to the database.';
                 setError(`Conexión fallida: ${errorMsg}`);
             }
-        } catch (error) {
-            console.error('Error al conectar con la base de datos', error);
-            setError('Error al conectar con la base de datos');
+        } catch (err: any) {
+            console.error('Error al conectar con la base de datos', err);
+            const errorMsg = err.response?.data?.message || 'Error al conectar con la base de datos';
+            setError(`Error al conectar con la base de datos: ${errorMsg}`);
         } finally {
             setLoading(false);
         }
     };
 
-    const InputField = ({ icon: Icon, ...props }) => (
+    const InputField = ({ icon: Icon, ...props }: any) => (
         <div
             className="mb-4 flex items-center border rounded-md px-2"
             onKeyDown={(e) => e.stopPropagation()}
@@ -104,27 +159,27 @@ const DatabaseConnectionForm: React.FC<DatabaseConnectionFormProps> = ({ onConne
     );
 
     const renderDatabaseSpecificFields = () => {
-        if (formState.databaseType === 'oracle') {
+        if (formData.databaseType === 'oracle') {
             return (
                 <InputField
                     icon={Database}
                     type="text"
                     id="sid"
                     name="sid"
-                    value={formState.sid || ''}
+                    value={formData.sid || ''}
                     onChange={handleChange}
                     placeholder="SID"
                     required
                 />
             );
-        } else if (formState.databaseType === 'sqlserver') {
+        } else if (formData.databaseType === 'sqlserver') {
             return (
                 <InputField
                     icon={Database}
                     type="text"
                     id="instance"
                     name="instance"
-                    value={formState.instance || ''}
+                    value={formData.instance || ''}
                     onChange={handleChange}
                     placeholder="Instance Name"
                     required
@@ -158,7 +213,7 @@ const DatabaseConnectionForm: React.FC<DatabaseConnectionFormProps> = ({ onConne
                             <select
                                 id="databaseManager"
                                 name="databaseType"
-                                value={formState.databaseType}
+                                value={formData.databaseType}
                                 onChange={handleDatabaseTypeChange}
                                 className="w-full px-4 py-2 border rounded-md"
                                 required
@@ -178,7 +233,7 @@ const DatabaseConnectionForm: React.FC<DatabaseConnectionFormProps> = ({ onConne
                             type="text"
                             id="host"
                             name="host"
-                            value={formState.host}
+                            value={formData.host}
                             onChange={handleChange}
                             placeholder="Host"
                             required
@@ -188,7 +243,7 @@ const DatabaseConnectionForm: React.FC<DatabaseConnectionFormProps> = ({ onConne
                             type="number"
                             id="port"
                             name="port"
-                            value={formState.port}
+                            value={formData.port}
                             onChange={handleChange}
                             placeholder="Port"
                             required
@@ -198,7 +253,7 @@ const DatabaseConnectionForm: React.FC<DatabaseConnectionFormProps> = ({ onConne
                             type="text"
                             id="databaseName"
                             name="databaseName"
-                            value={formState.databaseName}
+                            value={formData.databaseName}
                             onChange={handleChange}
                             placeholder="Database Name"
                             required
@@ -209,7 +264,7 @@ const DatabaseConnectionForm: React.FC<DatabaseConnectionFormProps> = ({ onConne
                             type="text"
                             id="userName"
                             name="userName"
-                            value={formState.userName}
+                            value={formData.userName}
                             onChange={handleChange}
                             placeholder="User"
                             required
@@ -219,7 +274,7 @@ const DatabaseConnectionForm: React.FC<DatabaseConnectionFormProps> = ({ onConne
                             type="password"
                             id="password"
                             name="password"
-                            value={formState.password}
+                            value={formData.password}
                             onChange={handleChange}
                             placeholder="Password"
                             required
@@ -250,6 +305,7 @@ const DatabaseConnectionForm: React.FC<DatabaseConnectionFormProps> = ({ onConne
             </motion.div>
         </div>
     );
+
 };
 
 export default React.memo(DatabaseConnectionForm);

@@ -1,23 +1,16 @@
-'use client';
-
-import React, {useEffect, memo, useCallback, useContext} from 'react';
+import React, { memo, useContext } from 'react';
 import { Handle, NodeResizeControl, Position } from '@xyflow/react';
 import DatabaseConnectionForm from '../DatabaseConnectionForm';
 import DynamicTables from '@/components/DynamicTables';
-import useCanvasStore from '@/store/useCanvasStore';
-import {FormStateContext} from "@/store/form-state-provider";
-
-const setNodeData = useCanvasStore.getState().setNodeData;
+import { FormStateContext } from "@/store/form-state-provider";
 
 const DatabaseConnectionNode = ({ id, data }) => {
     console.log('Rendering DatabaseConnectionNode:', id);
-    const isConnected = data.isConnected || false;
-
-    const handleConnectionSuccess = useCallback(() => {
-        setNodeData(id, { isConnected: true });
-    }, [id]);
-
-
+    const formStateContext = useContext(FormStateContext);
+    if (!formStateContext) {
+        throw new Error("DatabaseConnectionNode must be used within a FormStateProvider");
+    }
+    const { isConnected } = formStateContext;
 
     return (
         <div
@@ -25,7 +18,7 @@ const DatabaseConnectionNode = ({ id, data }) => {
             style={{ padding: 10, border: '1px solid #ccc', borderRadius: 5 }}
         >
             {!isConnected ? (
-                <DatabaseConnectionForm onConnectionSuccess={handleConnectionSuccess} />
+                <DatabaseConnectionForm />
             ) : (
                 <div>
                     {/* Renderiza el explorador del esquema de la base de datos */}
@@ -50,8 +43,7 @@ function areEqual(prevProps, nextProps) {
     );
 }
 
-export default React.memo(DatabaseConnectionNode, areEqual);
-
+export default memo(DatabaseConnectionNode, areEqual);
 
 function ResizeIcon() {
     return (
@@ -75,4 +67,4 @@ function ResizeIcon() {
         </svg>
     );
 }
-export {ResizeIcon};
+export { ResizeIcon };

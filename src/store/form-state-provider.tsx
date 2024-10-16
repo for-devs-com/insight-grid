@@ -1,6 +1,8 @@
-import React, { createContext, useState } from 'react';
+"use client";
 
-interface FormState {
+import React, { createContext, useState, ReactNode, useCallback } from 'react';
+
+interface ConnectionData {
     databaseType: string;
     host: string;
     port: number | '';
@@ -11,15 +13,20 @@ interface FormState {
     instance?: string;
 }
 
-interface FormStateContextProps {
-    formState: FormState;
-    setFormState: React.Dispatch<React.SetStateAction<FormState>>;
+interface FormState {
+    isConnected: boolean;
+    connectionData: ConnectionData;
 }
 
-export const FormStateContext = createContext<FormStateContextProps | undefined>(undefined);
+interface FormStateContextType extends FormState {
+    setConnected: (connected: boolean, connectionData?: ConnectionData) => void;
+}
 
-export const FormStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [formState, setFormState] = useState<FormState>({
+export const FormStateContext = createContext<FormStateContextType | undefined>(undefined);
+
+export const FormStateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    const [isConnected, setIsConnected] = useState<boolean>(false);
+    const [connectionData, setConnectionData] = useState<ConnectionData>({
         databaseType: '',
         host: 'localhost',
         port: '',
@@ -30,8 +37,26 @@ export const FormStateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         instance: '',
     });
 
+    const setConnected = useCallback((connected: boolean, data?: ConnectionData) => {
+        setIsConnected(connected);
+        if (connected && data) {
+            setConnectionData(data);
+        } else {
+            setConnectionData({
+                databaseType: '',
+                host: 'localhost',
+                port: '',
+                databaseName: '',
+                userName: '',
+                password: '',
+                sid: '',
+                instance: '',
+            });
+        }
+    }, []);
+
     return (
-        <FormStateContext.Provider value={{ formState, setFormState }}>
+        <FormStateContext.Provider value={{ isConnected, connectionData, setConnected }}>
             {children}
         </FormStateContext.Provider>
     );
