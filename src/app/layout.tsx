@@ -5,6 +5,8 @@ import "@/app/globals.css";
 import Sidebar from "@/components/Sidebar";
 import ContentArea from "@/components/ContentArea";
 import { Metadata } from 'next';
+import {getServerSession} from "next-auth";
+import {options} from "@/app/auth";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +21,9 @@ export const metadata: Metadata = {
     }
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+    const session = await getServerSession(options);
+
     return (
         <html lang="en" className="h-full">
         <body className={`${inter.className} w-full h-full`}>

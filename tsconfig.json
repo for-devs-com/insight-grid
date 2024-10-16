@@ -25,6 +25,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "typeRoots": ["src/lib/types", "./node_modules/@types"],
     "plugins": [
       {
         "name": "next"
@@ -33,6 +34,7 @@
   },
   "include": [
     "next-env.d.ts",
+    "next-auth.d.ts",
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx",

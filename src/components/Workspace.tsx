@@ -55,6 +55,8 @@ export type WorkspaceProps = {
     onNewNode: (node: any) => void;
 }
 
+
+
 export default function Workspace({
                                       conversationId,
                                       onMessage,
@@ -65,8 +67,11 @@ export default function Workspace({
                                   }: WorkspaceProps) {
 
     const {data: session} = useSession();
-    const userId = session?.user?.id as string;
+    const userId = session?.user as string;
 
+    if (!session || !session.accessToken) {
+        return <div>Por favor, inicia sesión para acceder.</div>;
+    }
 
     useEffect(() => {
         const verifyAndFetchState = async () => {

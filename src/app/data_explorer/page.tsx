@@ -14,14 +14,20 @@ export default function DataExplorerPage() {
         setNewElements((prev) => [...prev, node]);
     };
 
-    useEffect(() => {
+/*    useEffect(() => {
         setNodes(newElements);
         console.log('newElements', newElements);
-    }, [newElements, setNodes]);
+    }, [newElements, setNodes]);*/
 
     if (status === 'loading') {
         return <p>Loading...</p>;
     }
+
+    if (!session || status === 'unauthenticated') {
+        return <div>Por favor, inicia sesión para acceder as.</div>;
+    }
+
+
 
     return (
         <div className="h-full w-full">

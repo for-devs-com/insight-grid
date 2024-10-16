@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useSidebar } from '@/store/SidebarContext';
+import {useSession} from "next-auth/react";
 
 interface ContentAreaProps {
     children: React.ReactNode;
@@ -9,6 +10,11 @@ interface ContentAreaProps {
 
 const ContentArea: React.FC<ContentAreaProps> = ({ children }) => {
     const { isSidebarCollapsed } = useSidebar();
+    const { data: session } = useSession();
+
+    if (!session || !session.accessToken) {
+        return <div>Por favor, inicia sesión para acceder.</div>;
+    }
 
     return (
         <main

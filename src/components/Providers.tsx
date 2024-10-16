@@ -6,8 +6,7 @@ import {SidebarProvider} from "@/store/SidebarContext";
 import {FormStateProvider} from "@/store/form-state-provider";
 
 
-export function Providers({children}: Readonly<{ children: React.ReactNode }>) {
-
+export function Providers({children }: Readonly<{ children: React.ReactNode }>) {
     return <SessionProvider>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             <AppProvider>

@@ -15,10 +15,11 @@ import useCanvasStore from '@/store/useCanvasStore';
 import NodeMenu from './nodes/NodeMenu';
 import { nodeTypes } from '@/components/InteractiveCanvas.constants';
 import { useShallow } from 'zustand/react/shallow';
-import { AppNode, InteractiveCanvasState } from '@/lib/types';
+import { AppNode, InteractiveCanvasState } from '@/lib/types/types';
 import '@xyflow/react/dist/style.css';
 import '@xyflow/react/dist/base.css';
 import Dagre from '@dagrejs/dagre';
+import {useSession} from "next-auth/react";
 
 const MIN_DISTANCE = 150;
 
@@ -36,6 +37,7 @@ const selector = (state: InteractiveCanvasState) => ({
     isConnected: state.isConnected,
     setIsConnected: state.setIsConnected,
 });
+
 
 const edgeOptions = {
     animated: true,
@@ -81,6 +83,10 @@ const LayoutFlow = (newElements: any) => {
     const onNodesChange = useCanvasStore((state) => state.onNodesChange);
     const onEdgesChange = useCanvasStore((state) => state.onEdgesChange);
     const onConnect = useCanvasStore((state) => state.onConnect);
+    const {data: session} = useSession();
+    if (!session || !session.accessToken) {
+        return <div>Por favor, inicia sesión para acceder.</div>;
+    }
 
     const {
         setNodes,

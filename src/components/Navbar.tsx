@@ -1,13 +1,13 @@
 'use client';
 
 import React from 'react';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import {useSession, signIn, signOut} from 'next-auth/react';
 import Link from 'next/link';
-import { useSidebar } from '@/store/SidebarContext';
+import {useSidebar} from '@/store/SidebarContext';
 
 const Navbar: React.FC = () => {
-    const { data: session } = useSession();
-    const { isSidebarCollapsed, toggleSidebar, isSidebarOpen } = useSidebar();
+    const {data: session} = useSession();
+    const {isSidebarCollapsed, toggleSidebar, isSidebarOpen} = useSidebar();
 
     return (
         <nav className="bg-background text-foreground w-full h-16 z-50 flex-none relative overflow-hidden">

@@ -1,7 +1,7 @@
 import {create} from 'zustand';
 import {createJSONStorage, devtools, persist} from 'zustand/middleware';
 import {addEdge, applyNodeChanges, applyEdgeChanges, Edge} from '@xyflow/react';
-import {AppNode, InteractiveCanvasState} from "@/lib/types";
+import {AppNode, InteractiveCanvasState} from "@/lib/types/types";
 
 const useCanvasStore = create<InteractiveCanvasState>()(
     devtools(
