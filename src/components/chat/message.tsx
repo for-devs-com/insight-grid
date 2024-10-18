@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/utils/utils';
+import { cn } from '@/lib/utils/tailwind-utils';
 import React from 'react';
 
 // Different types of message bubbles.

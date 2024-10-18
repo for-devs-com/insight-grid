@@ -1,56 +1,49 @@
-'use client';
-
-import React, {useEffect, useState} from 'react';
-import {Handle, NodeResizeControl, NodeResizer, Position} from '@xyflow/react';
+import React, { memo, useContext } from 'react';
+import { Handle, NodeResizeControl, Position } from '@xyflow/react';
 import DatabaseConnectionForm from '../DatabaseConnectionForm';
-import DynamicTables from "@/components/DynamicTables";
-import useCanvasStore from "@/store/useCanvasStore";
+import DynamicTables from '@/components/DynamicTables';
+import { FormStateContext } from "@/store/form-state-provider";
 
-const DatabaseConnectionNode = ({id}) => {
-    /*const [isConnected, setIsConnected] = useState(false);*/
-    const isConnected = useCanvasStore((state) => state.nodes.find((node) => node.id === id)?.data?.isConnected || false);
-    const setNodeData = useCanvasStore((state) => state.setNodeData);
-
-    const controlStyle = {
-        background: 'transparent',
-        border: 'none',
-    };
-
-    const handleConnectionSuccess = () => {
-        /*setIsConnected(true);*/
-        setNodeData(id, {isConnected: true});
-        // Actualiza el estado del nodo para mostrar el explorador del esquema
-    };
-
-    useEffect(() => {
-        console.log('isConnected:', isConnected);
-        if (!isConnected) {
-            setNodeData(id, {isConnected: false});
-        }
-    },[id, isConnected, setNodeData]);
+const DatabaseConnectionNode = ({ id, data }) => {
+    console.log('Rendering DatabaseConnectionNode:', id);
+    const formStateContext = useContext(FormStateContext);
+    if (!formStateContext) {
+        throw new Error("DatabaseConnectionNode must be used within a FormStateProvider");
+    }
+    const { isConnected } = formStateContext;
 
     return (
-        <div className={"flex-1"} style={{padding: 10, border: '1px solid #ccc', borderRadius: 5, background: '#f8fafc'}}>
+        <div
+            className="flex-1"
+            style={{ padding: 10, border: '1px solid #ccc', borderRadius: 5 }}
+        >
             {!isConnected ? (
-                <DatabaseConnectionForm onConnectionSuccess={handleConnectionSuccess}/>
+                <DatabaseConnectionForm />
             ) : (
                 <div>
                     {/* Renderiza el explorador del esquema de la base de datos */}
-                    <DynamicTables/>
-                    <p>Database Schema Explorer for-devs.com</p>
+                    <DynamicTables />
+                    <p>Database Schema Explorer by for-devs.com</p>
                 </div>
             )}
-            <NodeResizeControl style={controlStyle} minWidth={100} minHeight={50}>
+            <NodeResizeControl style={{ background: 'transparent', border: 'none' }} minWidth={100} minHeight={50}>
                 <ResizeIcon />
             </NodeResizeControl>
-            <Handle type="target" position={Position.Top}/>
-            <Handle type="source" position={Position.Bottom}/>
+            <Handle type="target" position={Position.Top} />
+            <Handle type="source" position={Position.Bottom} />
         </div>
     );
 };
 
-export default DatabaseConnectionNode;
+function areEqual(prevProps, nextProps) {
+    // Solo re-renderizar si 'isConnected' o 'id' cambian
+    return (
+        prevProps.data.isConnected === nextProps.data.isConnected &&
+        prevProps.id === nextProps.id
+    );
+}
 
+export default memo(DatabaseConnectionNode, areEqual);
 
 function ResizeIcon() {
     return (
@@ -74,4 +67,4 @@ function ResizeIcon() {
         </svg>
     );
 }
-export {ResizeIcon};
+export { ResizeIcon };

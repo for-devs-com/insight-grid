@@ -1,38 +1,51 @@
 'use client';
 
 import React from 'react';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import {useSession, signIn, signOut} from 'next-auth/react';
 import Link from 'next/link';
+import {useSidebar} from '@/store/SidebarContext';
 
 const Navbar: React.FC = () => {
-    const { data: session } = useSession();
+    const {data: session} = useSession();
+    const {isSidebarCollapsed, toggleSidebar, isSidebarOpen} = useSidebar();
 
     return (
-        <nav className="bg-blue-900 text-white w-full top-0 left-0 h-16 right-0 z-50 flex-none relative">
-            <div className="container mx-auto px-2 py-3 flex justify-between items-center">
+        <nav className="bg-background text-foreground w-full h-16 z-50 flex-none relative overflow-hidden">
+            <div className="container mx-auto py-3 flex justify-between items-center sm:ml-8">
                 <div className="flex items-center">
-                    <Link href="/">
-                        for-devs.com
+                    <Link href="/" className="text-muted-foreground text-xl font-bold">
+                        dataanalytic.ai
                     </Link>
                 </div>
                 <div className="flex items-center">
-                    <Link href="/app/dashboard">
+                    <Link
+                        href="/dashboard"
+                        className="hidden mr-4 md:block text-muted-foreground hover:text-primary transition-colors duration-200"
+                    >
                         Dashboard
                     </Link>
                     {session?.user ? (
                         <div className="flex items-center">
                             <img
-                                className="w-8 h-8 rounded-full mr-2"
-                                src={session.user.image || undefined}
+                                className="w-8 h-8 rounded-full mr-4"
+                                src={session.user.image || '/default-avatar.png'}
                                 alt={session.user.name || session.user.email || 'User'}
                             />
-                            <span className="mr-4">{session.user.name || session.user.email}</span>
-                            <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={() => signOut()}>
+                            <span className="mr-4 text-muted-foreground">
+                                {session.user.name || session.user.email}
+                            </span>
+                            <button
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive-foreground hover:text-destructive font-bold py-2 px-4 rounded transition-colors duration-200"
+                                onClick={() => signOut()}
+                            >
                                 Logout
                             </button>
                         </div>
                     ) : (
-                        <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onClick={() => signIn()}>
+                        <button
+                            className="bg-primary text-primary-foreground hover:bg-primary-foreground hover:text-primary font-bold py-2 px-4 rounded transition-colors duration-200"
+                            onClick={() => signIn()}
+                        >
                             Sign In
                         </button>
                     )}

@@ -6,8 +6,7 @@ export default function DashboardLayout({
                                         }: {
     children: React.ReactNode;
 }) {
-    return (<section>
-        <h1>Database Connection</h1>
+    return (<>
         {children}
-    </section>)
+    </>)
 }
