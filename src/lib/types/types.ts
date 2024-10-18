@@ -12,6 +12,7 @@ export type AppNode = Node & {
 };
 
 export type InteractiveCanvasState = {
+    userId?: string;
     nodes: AppNode[];
     edges: Edge[];
     onNodesChange: OnNodesChange;
@@ -35,6 +36,15 @@ export interface Conversation extends Record<string, any> {
     messages: Message[]
     sharePath?: string
 }
+
+/*Create the Message and Role Type*/
+
+
+export interface Role {
+    id: string;
+    name: string;
+}
+
 
 /*
 export interface AppNode {

@@ -1,6 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: ["class"],
   content: [
     './pages/**/*.{ts,tsx, js, jsx}',
     './components/**/*.{ts,tsx, js, jsx}',
@@ -9,17 +8,48 @@ module.exports = {
   ],
   prefix: "",
   theme: {
+    screens: {
+      'sm': '640px',
+      'md': '768px',
+      'lg': '1024px',
+      'xl': '1280px',
+      '2xl': '1536px',
+    },
+    colors: {
+      primary: 'hsl(var(--primary))',
+      'primary-foreground': 'hsl(var(--primary-foreground))',
+      secondary: 'hsl(var(--secondary))',
+      'secondary-foreground': 'hsl(var(--secondary-foreground))',
+      muted: 'hsl(var(--muted))',
+      'muted-foreground': 'hsl(var(--muted-foreground))',
+      destructive: 'hsl(var(--destructive))',
+      'destructive-foreground': 'hsl(var(--destructive-foreground))',
+      background: 'hsl(var(--background))',
+      foreground: 'hsl(var(--foreground))',
+      border: 'hsl(var(--border))',
+      input: 'hsl(var(--input))',
+      ring: 'hsl(var(--ring))',
+    },
     container: {
       center: true,
       padding: "0",
       screens: {
-        sm: '480px',
-        md: '768px',
-        lg: '976px',
-        xl: '1440px',
+        'sm': '640px',
+        'md': '768px',
+        'lg': '1024px',
+        'xl': '1280px',
+        '2xl': '1536px',
       },
     },
     extend: {
+      spacing: {
+        '128': '32rem',
+        '144': '36rem',
+      },
+      borderRadius: {
+        '4xl': '2rem',
+
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },

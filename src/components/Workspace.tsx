@@ -1,14 +1,13 @@
 'use client';
 
 
-
-import {useChat, UseChatHelpers, CreateMessage, Message} from 'ai/react';
-import {createContext, useCallback, useContext, useState} from "react";
+import {CreateMessage, Message, useChat, UseChatHelpers} from 'ai/react';
+import React, {createContext, useCallback, useContext, useEffect} from "react";
 import {ensureMessageId, ensureToolResult} from "@/lib/utils/util";
-import {useMessageCreateMutation} from "@/data/chat/message-create-mutation";
 import Ide from "@/components/ide";
-import Chat from "@/components/chat/Chat";
 import InteractiveCanvas from "@/components/InteractiveCanvas";
+import {useSession} from "next-auth/react";
+import {verifyUserExistsInDb} from "@/lib/utils/stateService";
 
 // TODO: support public/private DBs that live in the cloud
 export type Visibility = 'local' | 'public' | 'private'
@@ -56,11 +55,47 @@ export type WorkspaceProps = {
     onNewNode: (node: any) => void;
 }
 
-export default function Workspace({conversationId, visibility, onMessage, onReply, onCancelReply, newElements, onNewNode}: WorkspaceProps) {
 
-    /*const {data: existingMessages, isLoading: isLoadingMessages} = useMessagesQuery(conversationId)
-    const {data: tables, isLoading: isLoadingSchema} = useTablesQuery({conversationId: conversationId});*/
-    /*const {mutateAsync: saveMessage} = useMessageCreateMutation(conversationId)*/
+
+export default function Workspace({
+                                      conversationId,
+                                      onMessage,
+                                      onReply,
+                                      onCancelReply,
+                                      newElements,
+                                      onNewNode
+                                  }: WorkspaceProps) {
+
+    const {data: session} = useSession();
+    const userId = session?.user as string;
+
+    if (!session || !session.accessToken) {
+        return <div>Por favor, inicia sesión para acceder.</div>;
+    }
+
+    useEffect(() => {
+        const verifyAndFetchState = async () => {
+            try {
+                if (!userId) return console.error('No userId found');
+
+                const exists = await verifyUserExistsInDb(userId);
+
+                if (exists) {
+                    console.log('User exists in DB');
+                    // Lógica para cargar el estado del usuario
+                } else {
+                    console.log('User does not exist in DB');
+                    // Lógica para crear un nuevo estado para el usuario
+                }
+            } catch (error) {
+                console.error('Error verifying user in DB:', error);
+            }
+        };
+
+        verifyAndFetchState();
+    }, [userId]);
+
+
 
 
     const {messages, setMessages, append, stop} = useChat({
@@ -73,8 +108,6 @@ export default function Workspace({conversationId, visibility, onMessage, onRepl
             await onReply?.(message, append);
         },
     });
-
-    const initialMessages = messages; // TODO:  research about useMemo() and useCallback() to optimize this
 
     const appendMessage = useCallback(
         async (message: Message | CreateMessage) => {
@@ -105,9 +138,10 @@ export default function Workspace({conversationId, visibility, onMessage, onRepl
             newElements,
             onNewNode
         }}>
-            <div className="flex">
-                <Ide className={"flex-1"}>
-                    <InteractiveCanvas  newElements={newElements}/>
+            <div className="w-full h-full lg:flex flex-col lg:flex-row gap-8">
+                <Ide className="flex-1 sm:py-6 sm:pl-6">
+
+                    <InteractiveCanvas newElements={newElements}/>
                 </Ide>
             </div>
         </WorkspaceContext.Provider>
