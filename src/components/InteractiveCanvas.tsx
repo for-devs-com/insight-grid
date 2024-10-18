@@ -2,20 +2,18 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
     Background,
-    BackgroundVariant,
     Controls,
     Edge,
     MiniMap,
     ReactFlow,
     ReactFlowProvider,
     useReactFlow,
-    useStoreApi,
 } from '@xyflow/react';
 import useCanvasStore from '@/store/useCanvasStore';
 import NodeMenu from './nodes/NodeMenu';
-import { nodeTypes } from '@/components/InteractiveCanvas.constants';
-import { useShallow } from 'zustand/react/shallow';
-import { AppNode, InteractiveCanvasState } from '@/lib/types/types';
+import {nodeTypes} from '@/components/InteractiveCanvas.constants';
+import {useShallow} from 'zustand/react/shallow';
+import {AppNode, InteractiveCanvasState} from '@/lib/types/types';
 import '@xyflow/react/dist/style.css';
 import '@xyflow/react/dist/base.css';
 import Dagre from '@dagrejs/dagre';
@@ -49,7 +47,7 @@ const edgeOptions = {
 // this function is used to layout the elements in the canvas
 const getLayoutedElements = (nodes, edges, options) => {
     const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
-    g.setGraph({ rankdir: options.direction });
+    g.setGraph({rankdir: options.direction});
 
     edges.forEach((edge) => g.setEdge(edge.source, edge.target));
     nodes.forEach((node) =>
@@ -68,7 +66,7 @@ const getLayoutedElements = (nodes, edges, options) => {
             const x = position.x - (node.measured?.width ?? 0) / 2;
             const y = position.y - (node.measured?.height ?? 0) / 2;
 
-            return { ...node, position: { x, y } };
+            return {...node, position: {x, y}};
         }),
         edges,
     };
@@ -76,15 +74,15 @@ const getLayoutedElements = (nodes, edges, options) => {
 
 // this is the main component that renders the interactive canvas
 const LayoutFlow = (newElements: any) => {
-    const { fitView } = useReactFlow();
-    const { getInternalNode } = useReactFlow();
+    const {fitView} = useReactFlow();
+    const {getInternalNode} = useReactFlow();
     const nodes = useCanvasStore((state) => state.nodes);
     const edges = useCanvasStore((state) => state.edges);
     const onNodesChange = useCanvasStore((state) => state.onNodesChange);
     const onEdgesChange = useCanvasStore((state) => state.onEdgesChange);
     const onConnect = useCanvasStore((state) => state.onConnect);
     const {data: session} = useSession();
-    if (!session || !session.accessToken) {
+    if (!session) {
         return <div>Por favor, inicia sesión para acceder.</div>;
     }
 
@@ -120,11 +118,11 @@ const LayoutFlow = (newElements: any) => {
         [addNode],
     );
 
-/*    useEffect(() => {
-        if (newElements.length) {
-            newElements.forEach(addValidNode);
-        }
-    }, [newElements, addValidNode]);*/
+    /*    useEffect(() => {
+            if (newElements.length) {
+                newElements.forEach(addValidNode);
+            }
+        }, [newElements, addValidNode]);*/
 
     const handleNodesDelete = (deletedNodes: any[]) => {
         deletedNodes.forEach((node) => removeNode(node.id));
@@ -132,7 +130,7 @@ const LayoutFlow = (newElements: any) => {
 
     const onLayout = useCallback(
         (direction) => {
-            const layouted = getLayoutedElements(nodes, edges, { direction });
+            const layouted = getLayoutedElements(nodes, edges, {direction});
 
             setNodes([...layouted.nodes]);
             setEdges([...layouted.edges]);
@@ -145,7 +143,7 @@ const LayoutFlow = (newElements: any) => {
     );
 
     const getClosestEdge = useCallback((node: AppNode) => {
-        const { nodes } = useCanvasStore.getState();
+        const {nodes} = useCanvasStore.getState();
         const internalNode = getInternalNode(node.id);
 
         const closestNode = nodes.reduce(
@@ -199,7 +197,7 @@ const LayoutFlow = (newElements: any) => {
                 });
 
                 nextEdges.push(closeEdge as Edge);
-                return { edges: nextEdges } as Partial<InteractiveCanvasState>;
+                return {edges: nextEdges} as Partial<InteractiveCanvasState>;
             });
         },
         [getClosestEdge],
@@ -214,7 +212,7 @@ const LayoutFlow = (newElements: any) => {
                 >
                     Open Menu
                 </button>
-                <NodeMenu open={nodeMenuOpen} onClose={() => setNodeMenuOpen(false)} />
+                <NodeMenu open={nodeMenuOpen} onClose={() => setNodeMenuOpen(false)}/>
                 <button
                     onClick={() => onLayout('TB')}
                     className="hover:bg-primary text-white px-4 py-2 rounded"
@@ -240,8 +238,8 @@ const LayoutFlow = (newElements: any) => {
 
                     className="bg-background"
                     fitView
-                    style={{ width: '100%', height: '100%' }}
-                    connectionLineStyle={{ stroke: '#FFCC00' }}
+                    style={{width: '100%', height: '100%'}}
+                    connectionLineStyle={{stroke: '#FFCC00'}}
                     defaultEdgeOptions={edgeOptions}
                     maxZoom={4}
                     minZoom={0.2}
@@ -260,18 +258,18 @@ const LayoutFlow = (newElements: any) => {
                             }
                         }}
                     />
-                    <Controls />
-                    <Background gap={56} />
+                    <Controls/>
+                    <Background gap={56}/>
                 </ReactFlow>
             </div>
         </div>
     );
 };
 
-export default function InteractiveCanvas({ newElements }) {
+export default function InteractiveCanvas({newElements}) {
     return (
         <ReactFlowProvider>
-            <LayoutFlow size={14} newElements={newElements} />
+            <LayoutFlow size={14} newElements={newElements}/>
         </ReactFlowProvider>
     );
 }

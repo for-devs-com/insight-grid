@@ -1,21 +1,20 @@
-// src/components/DatabaseConnectionForm.tsx
-
 "use client";
 
-import React, { useContext, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Database, Server, User, Key } from 'lucide-react';
-import { FormStateContext } from '@/store/form-state-provider';
-import { useSession } from "next-auth/react";
-import axiosInstance from '@/lib/utils/axiosInstance'; // Importa la instancia personalizada
+import React, {useContext, useState} from 'react';
+import {motion} from 'framer-motion';
+import {Database, Server, User, Key} from 'lucide-react';
+import {FormStateContext} from '@/store/form-state-provider';
+import {useSession} from "next-auth/react";
+import axiosInstance from '@/lib/utils/axiosInstance';
 
-interface DatabaseConnectionFormProps {}
+interface DatabaseConnectionFormProps {
+}
 
 const databaseManagers = [
-    { value: 'postgresql', label: 'PostgreSQL', defaultPort: 5432 },
-    { value: 'mysql', label: 'MySQL', defaultPort: 3306 },
-    { value: 'sqlserver', label: 'SQL Server', defaultPort: 1433 },
-    { value: 'oracle', label: 'Oracle', defaultPort: 1521 },
+    {value: 'postgresql', label: 'PostgreSQL', defaultPort: 5432},
+    {value: 'mysql', label: 'MySQL', defaultPort: 3306},
+    {value: 'sqlserver', label: 'SQL Server', defaultPort: 1433},
+    {value: 'oracle', label: 'Oracle', defaultPort: 1521},
 ];
 
 interface FormData {
@@ -35,14 +34,14 @@ const DatabaseConnectionForm: React.FC<DatabaseConnectionFormProps> = () => {
     if (!formStateContext) {
         throw new Error("DatabaseConnectionForm must be used within a FormStateProvider");
     }
-    const { setConnected } = formStateContext;
-    const { data: session, status } = useSession();
+    const {setConnected} = formStateContext;
+    const {data: session, status} = useSession();
 
     if (status === 'loading') {
         return <div>Loading...</div>;
     }
 
-    if (!session || !session.accessToken) {
+    if (!session) {
         return <div>Por favor, inicia sesión para acceder a este formulario.</div>;
     }
 
@@ -63,7 +62,7 @@ const DatabaseConnectionForm: React.FC<DatabaseConnectionFormProps> = () => {
     const [loading, setLoading] = useState<boolean>(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setFormData((prev) => ({
             ...prev,
             [name]: name === 'port' ? (value === '' ? '' : Number(value)) : value,
@@ -100,7 +99,7 @@ const DatabaseConnectionForm: React.FC<DatabaseConnectionFormProps> = () => {
         };
 
         // Verifica que el token esté disponible
-        if (!session || !session.accessToken) {
+        if (!session) {
             setError('Authentication error. Please log in again.');
             setLoading(false);
             return;
@@ -110,7 +109,6 @@ const DatabaseConnectionForm: React.FC<DatabaseConnectionFormProps> = () => {
             const response = await axiosInstance.post('/query/bridge/database/connect', connectionData, {
                 headers: {
                     'Content-Type': 'application/json',
-                    // 'Authorization': `Bearer ${session.accessToken}`, // Ya manejado por axiosInstance
                 },
             });
 
@@ -141,14 +139,14 @@ const DatabaseConnectionForm: React.FC<DatabaseConnectionFormProps> = () => {
         }
     };
 
-    const InputField = ({ icon: Icon, ...props }: any) => (
+    const InputField = ({icon: Icon, ...props}: any) => (
         <div
             className="mb-4 flex items-center border rounded-md px-2"
             onKeyDown={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
             onWheel={(e) => e.stopPropagation()}
         >
-            <Icon className="text-gray-400 mr-2" />
+            <Icon className="text-gray-400 mr-2"/>
             <input
                 {...props}
                 className="w-full py-2 outline-none bg-transparent"
@@ -192,9 +190,9 @@ const DatabaseConnectionForm: React.FC<DatabaseConnectionFormProps> = () => {
     return (
         <div className="container mx-auto max-w-md p-4">
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
+                transition={{duration: 0.5}}
             >
                 <div className="mt-4">
                     <h2 className="font-bold text-xl mb-4 text-center">
@@ -293,8 +291,8 @@ const DatabaseConnectionForm: React.FC<DatabaseConnectionFormProps> = () => {
                         >
                             {loading ? (
                                 <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
-                                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                    <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="4" />
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+                                    <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="4"/>
                                 </svg>
                             ) : (
                                 'Connect'

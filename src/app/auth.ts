@@ -22,6 +22,7 @@ export const options: AuthOptions = {
     secret,
     session: {
         strategy: 'jwt',
+        maxAge: 30 * 24 * 60 * 60, // 30 días
     },
     callbacks: {
         async signIn({account, profile}) {
@@ -30,49 +31,35 @@ export const options: AuthOptions = {
             }
             return "/auth/error"; // Redirigir en caso de no cumplir
         },
-        async jwt({token, user, account, profile}) {
-            // Si el usuario y la cuenta están presentes, significa que es un nuevo inicio de sesión
-            if (user && account) {
+        async jwt({ token, user, account }) {
+            // Si hay un inicio de sesión nuevo, asigna valores del usuario
+            if (account && user) {
                 token.sub = user.id || user.email;
-                token.name = user.name || profile?.name;
                 token.email = user.email;
-                token.picture = user.image || profile?.image;
-                token.accessToken = account.access_token;
             }
 
-            // Verifica si el token ya ha sido firmado, de lo contrario genera uno nuevo
-             if (token.accessToken) {
-                 // Excluye la expiración del token original para crear un nuevo payload
-                 const { exp, ...payload } = token;
+            const payload = {
+                sub: token.sub,
+                email: token.email,
+                iat: Math.floor(Date.now() / 1000), // Timestamp actual
+            };
 
-                 token.accessToken = jwt.sign(
-                     {
-                         ...payload,
-                         sub: token.sub,
-                         name: token.name,
-                         email: token.email,
-                         picture: token.picture,
-                         iat: Math.floor(Date.now() / 1000),  // Timestamp actual
-                     },
-                     process.env.NEXTAUTH_SECRET as string,  //
-                     {
-                         algorithm: 'HS256',
-                         expiresIn: '1h',
-                     }
-                 );
-             }
+            token.accessToken = jwt.sign(payload, process.env.NEXTAUTH_SECRET as string, {
+                algorithm: 'HS256',
+                expiresIn: '1h', // Token válido por 1 hora
+            });
 
-            console.log('Token JWT generado auht.ts:', token);
+            console.log('Token JWT generado en jwt:', token);
             return token;
         },
-        async session({session, token}) {
-            session.user.name = token.name as string;
-            session.user.email = token.email as string;
-            session.user.image = token.picture as string;
-            session.accessToken = token.accessToken as string;
-            console.log('Sesión generada auth.ts:', session);
-
-            return session;
+        session: async function ({session, token}) {
+            if (token) {
+                session.user["id"] = token.sub as string;
+                session.user.name = token.name as string;
+                session.user.email = token.email as string;
+                session.accessToken = token.accessToken as string;
+            }
+            return session; // Retorna la sesión actualizada
         },
     },
 };
