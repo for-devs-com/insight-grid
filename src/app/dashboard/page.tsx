@@ -20,6 +20,10 @@ export default function DashboardPage() {
     if (status === 'unauthenticated') {
         return <div>Access Denied</div>
     }
+    if (!session || !session.accessToken) {
+        return <div>Por favor, inicia sesión para acceder.</div>;
+    }
+
     return (
         <div className="grid p-4 space-y-4 h-screen">
             <h1 className="text-2xl font-bold">Data Analytics Dashboard</h1>

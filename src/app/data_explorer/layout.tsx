@@ -6,7 +6,7 @@ export default function DataExplorerLayout({
                                         }: {
     children: React.ReactNode;
 }) {
-    return (<>
+    return (<div className="h-full w-full">
         {children}
-    </>)
+    </div>)
 }

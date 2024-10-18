@@ -1,26 +1,29 @@
 'use client';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
     Background,
     BackgroundVariant,
-    Controls, Edge,
+    Controls,
+    Edge,
     MiniMap,
     ReactFlow,
     ReactFlowProvider,
-    useReactFlow, useStoreApi,
+    useReactFlow,
+    useStoreApi,
 } from '@xyflow/react';
 import useCanvasStore from '@/store/useCanvasStore';
 import NodeMenu from './nodes/NodeMenu';
-import {nodeTypes} from '@/components/InteractiveCanvas.constants';
-import {useShallow} from "zustand/react/shallow";
-import {AppNode, InteractiveCanvasState} from "@/lib/types";
+import { nodeTypes } from '@/components/InteractiveCanvas.constants';
+import { useShallow } from 'zustand/react/shallow';
+import { AppNode, InteractiveCanvasState } from '@/lib/types/types';
 import '@xyflow/react/dist/style.css';
 import '@xyflow/react/dist/base.css';
 import Dagre from '@dagrejs/dagre';
+import {useSession} from "next-auth/react";
 
 const MIN_DISTANCE = 150;
 
-// Selector for the store
+// The selector function is used to select the state from the store
 const selector = (state: InteractiveCanvasState) => ({
     nodes: state.nodes,
     edges: state.edges,
@@ -35,7 +38,7 @@ const selector = (state: InteractiveCanvasState) => ({
     setIsConnected: state.setIsConnected,
 });
 
-// Edge options
+
 const edgeOptions = {
     animated: true,
     style: {
@@ -43,10 +46,10 @@ const edgeOptions = {
     },
 };
 
-// Layout function
+// this function is used to layout the elements in the canvas
 const getLayoutedElements = (nodes, edges, options) => {
     const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
-    g.setGraph({rankdir: options.direction});
+    g.setGraph({ rankdir: options.direction });
 
     edges.forEach((edge) => g.setEdge(edge.source, edge.target));
     nodes.forEach((node) =>
@@ -65,37 +68,43 @@ const getLayoutedElements = (nodes, edges, options) => {
             const x = position.x - (node.measured?.width ?? 0) / 2;
             const y = position.y - (node.measured?.height ?? 0) / 2;
 
-            return {...node, position: {x, y}};
+            return { ...node, position: { x, y } };
         }),
         edges,
     };
 };
 
-// LayoutFlow component
+// this is the main component that renders the interactive canvas
 const LayoutFlow = (newElements: any) => {
-    const {fitView} = useReactFlow(); // Hook to fit the view
-    const {getInternalNode} = useReactFlow();
+    const { fitView } = useReactFlow();
+    const { getInternalNode } = useReactFlow();
+    const nodes = useCanvasStore((state) => state.nodes);
+    const edges = useCanvasStore((state) => state.edges);
+    const onNodesChange = useCanvasStore((state) => state.onNodesChange);
+    const onEdgesChange = useCanvasStore((state) => state.onEdgesChange);
+    const onConnect = useCanvasStore((state) => state.onConnect);
+    const {data: session} = useSession();
+    if (!session || !session.accessToken) {
+        return <div>Por favor, inicia sesión para acceder.</div>;
+    }
 
-    // Destructure the store
     const {
-        nodes,
-        edges,
-        onNodesChange,
-        onEdgesChange,
-        onConnect,
         setNodes,
         setEdges,
         addNode,
         removeNode,
         isConnected,
         setIsConnected,
-
     } = useCanvasStore(useShallow(selector));
 
-    // State for the Node Menu
+    const memoizedNodes = useMemo(() => nodes, [nodes]);
+    const memoizedEdges = useMemo(() => edges, [edges]);
+    const memoizedOnNodesChange = useCallback(onNodesChange, []);
+    const memoizedOnEdgesChange = useCallback(onEdgesChange, []);
+    const memoizedOnConnect = useCallback(onConnect, []);
+
     const [nodeMenuOpen, setNodeMenuOpen] = useState(false);
 
-    // Add valid node to the store
     const addValidNode = useCallback(
         (newNode: AppNode) => {
             if (
@@ -107,25 +116,23 @@ const LayoutFlow = (newElements: any) => {
             } else {
                 console.error('Node position is invalid:', newNode);
             }
-        }, [setNodes]
+        },
+        [addNode],
     );
 
-    // Add new elements to the store
-    useEffect(() => {
+/*    useEffect(() => {
         if (newElements.length) {
             newElements.forEach(addValidNode);
         }
-    }, [newElements, addValidNode]);
-
+    }, [newElements, addValidNode]);*/
 
     const handleNodesDelete = (deletedNodes: any[]) => {
-        deletedNodes.forEach(node => removeNode(node.id));
-    }
+        deletedNodes.forEach((node) => removeNode(node.id));
+    };
 
     const onLayout = useCallback(
         (direction) => {
-            console.log(nodes);
-            const layouted = getLayoutedElements(nodes, edges, {direction});
+            const layouted = getLayoutedElements(nodes, edges, { direction });
 
             setNodes([...layouted.nodes]);
             setEdges([...layouted.edges]);
@@ -137,9 +144,8 @@ const LayoutFlow = (newElements: any) => {
         [nodes, edges],
     );
 
-
     const getClosestEdge = useCallback((node: AppNode) => {
-        const {nodes} = useCanvasStore.getState();
+        const { nodes } = useCanvasStore.getState();
         const internalNode = getInternalNode(node.id);
 
         const closestNode = nodes.reduce(
@@ -160,7 +166,7 @@ const LayoutFlow = (newElements: any) => {
             {
                 distance: Number.MAX_VALUE,
                 node: null,
-            } as { distance: number; node: AppNode | null }
+            } as { distance: number; node: AppNode | null },
         );
 
         if (!closestNode.node) {
@@ -192,82 +198,80 @@ const LayoutFlow = (newElements: any) => {
                     return ne;
                 });
 
-                nextEdges.push(closeEdge as Edge); // Asegurando que closeEdge sea de tipo Edge
-                return {edges: nextEdges} as Partial<InteractiveCanvasState>;
+                nextEdges.push(closeEdge as Edge);
+                return { edges: nextEdges } as Partial<InteractiveCanvasState>;
             });
         },
-        [getClosestEdge]
+        [getClosestEdge],
     );
 
     return (
-        /*Interactive Canvas*/
-        <div className="flex flex-col h-screen bg-gray-950">
-            {/* Node Menu*/}
-            <div className="flex flex-row items-center px-3 py-3 bg-gray-800 border-b border-gray-700">
+        <div className="flex flex-1 flex-col w-full h-full">
+            <div className="px-3 py-3 border-b border-secondary bg-background">
                 <button
                     onClick={() => setNodeMenuOpen(true)}
-                    className="bg-blue-500 text-white mx-2 px-4 py-2 rounded"
+                    className="text-white mx-2 px-4 py-2 rounded hover:bg-primary border-secondary"
                 >
                     Open Menu
                 </button>
-                <NodeMenu
-                    open={nodeMenuOpen}
-                    onClose={() => setNodeMenuOpen(false)}
-                />
+                <NodeMenu open={nodeMenuOpen} onClose={() => setNodeMenuOpen(false)} />
                 <button
                     onClick={() => onLayout('TB')}
-                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                    className="hover:bg-primary text-white px-4 py-2 rounded"
                 >
                     Vertical Layout
                 </button>
                 <button
                     onClick={() => onLayout('LR')}
-                    className="bg-blue-500 text-white px-4 py-2 rounded mx-2"
+                    className="hover:bg-primary text-white px-4 py-2 rounded mx-2"
                 >
                     Horizontal Layout
                 </button>
             </div>
 
-            {/*Interactive Canvas*/}
-            <div className="flex-1">
+            <div className="flex flex-grow  h-full w-full">
                 <ReactFlow
-                    nodes={nodes}
-                    edges={edges}
-                    onNodesChange={onNodesChange}
-                    onEdgesChange={onEdgesChange}
-                    onConnect={onConnect}
+                    nodes={memoizedNodes}
+                    edges={memoizedEdges}
+                    onNodesChange={memoizedOnNodesChange}
+                    onEdgesChange={memoizedOnEdgesChange}
+                    onConnect={memoizedOnConnect}
                     nodeTypes={nodeTypes}
-                    className="bg-gray-800"
+
+                    className="bg-background"
                     fitView
-                    style={{width: '100%', height: '100%'}}
-                    connectionLineStyle={{stroke: '#FFCC00'}}
+                    style={{ width: '100%', height: '100%' }}
+                    connectionLineStyle={{ stroke: '#FFCC00' }}
                     defaultEdgeOptions={edgeOptions}
                     maxZoom={4}
                     minZoom={0.2}
                     onNodeDrag={onNodeDrag}
+
                 >
-                    <MiniMap nodeColor={(node) => {
-                        switch (node.type) {
-                            case 'databaseConnection':
-                                return 'blue';
-                            default:
-                                return '#FFCC00';
-                        }
-                    }}/>
-                    <Controls/>
-                    <Background gap={56}/>
+                    <MiniMap
+                        pannable
+                        zoomable
+                        nodeColor={(node) => {
+                            switch (node.type) {
+                                case 'databaseConnection':
+                                    return 'blue';
+                                default:
+                                    return '#FFCC00';
+                            }
+                        }}
+                    />
+                    <Controls />
+                    <Background gap={56} />
                 </ReactFlow>
             </div>
-
         </div>
     );
 };
 
-/*InteractiveCanvas component*/
-export default function InteractiveCanvas({newElements}) {
+export default function InteractiveCanvas({ newElements }) {
     return (
         <ReactFlowProvider>
-            <LayoutFlow newElements={newElements}/>
+            <LayoutFlow size={14} newElements={newElements} />
         </ReactFlowProvider>
     );
 }

@@ -55,6 +55,8 @@ export type WorkspaceProps = {
     onNewNode: (node: any) => void;
 }
 
+
+
 export default function Workspace({
                                       conversationId,
                                       onMessage,
@@ -65,8 +67,11 @@ export default function Workspace({
                                   }: WorkspaceProps) {
 
     const {data: session} = useSession();
-    const userId = session?.user?.id as string;
+    const userId = session?.user as string;
 
+    if (!session || !session.accessToken) {
+        return <div>Por favor, inicia sesión para acceder.</div>;
+    }
 
     useEffect(() => {
         const verifyAndFetchState = async () => {
@@ -133,8 +138,8 @@ export default function Workspace({
             newElements,
             onNewNode
         }}>
-            <div className="flex flex-grow">
-                <Ide className={"flex-1"}>
+            <div className="w-full h-full lg:flex flex-col lg:flex-row gap-8">
+                <Ide className="flex-1 sm:py-6 sm:pl-6">
 
                     <InteractiveCanvas newElements={newElements}/>
                 </Ide>
