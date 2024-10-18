@@ -36,6 +36,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+feature/responsive-ui
 # idea
 .idea/
 
@@ -45,3 +46,7 @@ next-env.d.ts
 # vscode
 .vscode/
 .vscode/*
+
+# editors config
+.idea
+develop
