@@ -2,8 +2,8 @@
 
 # dependencies
 /node_modules
-# /.pnp
-#.pnp.js
+/.pnp
+.pnp.js
 .yarn/install-state.gz
 
 # testing
@@ -36,5 +36,17 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+feature/responsive-ui
+# idea
+.idea/
+
+# log files
+*.log
+
+# vscode
+.vscode/
+.vscode/*
+
 # editors config
 .idea
+develop
