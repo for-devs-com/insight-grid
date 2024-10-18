@@ -1,26 +1,24 @@
 "use client"
-
-import DynamicTables from "@/components/DynamicTables";
 import React from "react";
 import {useSession} from "next-auth/react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ActiveConnections } from "@/components/dashboard/ActiveConnections"
-import { RecentGrids } from "@/components/dashboard/RecentGrids"
-import { RecentActivities } from "@/components/dashboard/RecentActivities"
-import { DataProcessedChart } from "@/components/dashboard/DataProcessedChart"
-import { PlatformUsageChart } from "@/components/dashboard/PlatformUsageChart"
-import { DatabaseUsageChart } from "@/components/dashboard/DatabaseUsageChart"
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
+import {ActiveConnections} from "@/components/dashboard/ActiveConnections"
+import {RecentGrids} from "@/components/dashboard/RecentGrids"
+import {RecentActivities} from "@/components/dashboard/RecentActivities"
+import {DataProcessedChart} from "@/components/dashboard/DataProcessedChart"
+import {PlatformUsageChart} from "@/components/dashboard/PlatformUsageChart"
+import {DatabaseUsageChart} from "@/components/dashboard/DatabaseUsageChart"
 
 export default function DashboardPage() {
-    const {data: session, status}  = useSession();
+    const {data: session, status} = useSession();
     if (status === 'loading') {
         return <div>Loading...</div>
     }
     if (status === 'unauthenticated') {
         return <div>Access Denied</div>
     }
-    if (!session || !session.accessToken) {
+    if (!session) {
         return <div>Por favor, inicia sesión para acceder.</div>;
     }
 

@@ -56,7 +56,6 @@ export type WorkspaceProps = {
 }
 
 
-
 export default function Workspace({
                                       conversationId,
                                       onMessage,
@@ -69,7 +68,7 @@ export default function Workspace({
     const {data: session} = useSession();
     const userId = session?.user as string;
 
-    if (!session || !session.accessToken) {
+    if (!session) {
         return <div>Por favor, inicia sesión para acceder.</div>;
     }
 
@@ -94,8 +93,6 @@ export default function Workspace({
 
         verifyAndFetchState();
     }, [userId]);
-
-
 
 
     const {messages, setMessages, append, stop} = useChat({
